@@ -43,8 +43,8 @@ public class PostIT {
 		postDTO.setImage("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/");
 		List<String> taggedUsers = new ArrayList<String>();
 		postDTO.setTaggedUsers(taggedUsers);
-		Post result = postService.createPost(postDTO, "jova");
-		assertNotNull(result.getId());
+		PostDTO result = postService.createPost(postDTO, "jova");
+		assertNotNull(result.getImage());
 		assertEquals(postDTO.getDescription(), result.getDescription());
 	}
 	

@@ -27,7 +27,7 @@ public class Consumer {
 	@Autowired 
 	private KafkaTemplate<String, String> kafkaTemp;
 	
-	@KafkaListener(topics="auth-topic", groupId="mygroup")
+	@KafkaListener(topics="auth-topic", groupId="mygroup-post")
 	public void consumeFromTopic(ConsumerRecord<String, String> consumerRecord) throws JsonProcessingException {
 		String value = consumerRecord.value();
 		System.out.println("Consummed message " + value);

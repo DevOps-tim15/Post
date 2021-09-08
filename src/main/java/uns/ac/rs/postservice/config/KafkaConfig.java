@@ -17,7 +17,7 @@ public class KafkaConfig {
     {
         ConcurrentMessageListenerContainer<String, String> replyContainer = factory.createContainer("reply-post");
         replyContainer.getContainerProperties().setMissingTopicsFatal(false);
-        replyContainer.getContainerProperties().setGroupId("mygroup");
+        replyContainer.getContainerProperties().setGroupId("mygroup-post");
         return new ReplyingKafkaTemplate<>(producerFactory, replyContainer);
     }
 }

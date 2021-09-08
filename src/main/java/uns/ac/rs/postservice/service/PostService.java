@@ -24,7 +24,7 @@ public class PostService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public Post createPost(PostDTO postDTO, String username) throws InvalidDataException {
+	public PostDTO createPost(PostDTO postDTO, String username) throws InvalidDataException {
 		
 		if (postDTO.getImage().isEmpty() || postDTO.getImage() == null ) {
 			throw new InvalidDataException("Invalid photo.");
@@ -41,7 +41,7 @@ public class PostService {
 			newPost.getTaggedUsers().add(taggedUser);
 		}
 		postRepository.save(newPost);
-		return newPost;
+		return PostMapper.fromEntity(newPost);
 	}
 
 	public List<Post> getAll() {
