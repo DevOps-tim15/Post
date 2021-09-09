@@ -2,6 +2,7 @@ package uns.ac.rs.postservice.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,23 +50,23 @@ public class PostService {
 			newPost.getTaggedUsers().add(taggedUser);
 		}
 		postRepository.save(newPost);
-		return PostMapper.fromEntity(newPost);
+		return PostMapper.fromEntity(newPost, user);
 	}
 
 	public List<Post> getAll() {
 		return postRepository.findAll();
 	}
 
-	public List<PostDTO> getAllByUser() {
-		User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		List<Post> posts = postRepository.findAllByUser(user);
-		List<PostDTO> postsDTO = PostMapper.fromEntityList(posts);
+	public List<PostDTO> getAllByUser(String username) {
+		User user = userRepository.findByUsername(username);
+		List<Post> posts = postRepository.findAllByUserId(user.getId());
+		List<PostDTO> postsDTO = PostMapper.fromEntityList(posts, user);
 		return postsDTO;
 	}
 
 	public List<PostDTO> getAllByPublicUsers() {
 		List<Post> posts = postRepository.findAllPostsByPublicUsers();
-		List<PostDTO> postsDTO = PostMapper.fromEntityList(posts);
+		List<PostDTO> postsDTO = PostMapper.fromEntityListNoUser(posts);
 		return postsDTO;
 	}
 
@@ -80,12 +81,43 @@ public class PostService {
 		for (User u : followingUsers) {
 			ids.add(u.getId());
 		}
-		List<Post> posts = postRepository.findAllByFollowingUsers(ids);
 		if (user.getIsPrivate()) {
-			posts.addAll(user.getPosts());
+			ids.add(user.getId());
 		}
+		List<Post> posts = postRepository.findAllByFollowingUsers(ids);
 		
-		return PostMapper.fromEntityList(posts);
+		
+		return PostMapper.fromEntityList(posts, user);
+	}
+
+	public PostDTO likePost(Long postId, String username) throws InvalidDataException{
+		Optional<Post> getPost = postRepository.findById(postId);
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Post does not exist");
+		}
+		Post post = getPost.get();
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		post.getLikedBy().add(user);
+		postRepository.save(post);
+		
+		return PostMapper.fromEntity(post, user);
+	}
+	
+	public PostDTO dislikePost(Long postId, String username) throws InvalidDataException{
+		Post post = postRepository.findById(postId).get();
+		if (post == null) {
+			throw new InvalidDataException("User does not exist");
+		}
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		post.getDislikedBy().add(user);
+		postRepository.save(post);
+		return PostMapper.fromEntity(post, user);
 	}
 
 }

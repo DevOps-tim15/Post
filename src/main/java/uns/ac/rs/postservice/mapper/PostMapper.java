@@ -10,9 +10,37 @@ import uns.ac.rs.postservice.dto.PostDTO;
 
 public class PostMapper {
 	
-	public static PostDTO fromEntity(Post post) {
-		return new PostDTO(post.getDescription(), new String(post.getPicture(),  StandardCharsets.UTF_8), UserMapper.fromEntityToString(post.getTaggedUsers()));
+	public static PostDTO fromEntity(Post post, User user) {
+		PostDTO postDTO = new PostDTO(post.getId(), post.getUser().getUsername(), post.getDescription(), new String(post.getPicture(),  StandardCharsets.UTF_8), UserMapper.fromEntityToString(post.getTaggedUsers()));
+		postDTO.setLikes((long) post.getLikedBy().size());
+		postDTO.setDislikes((long) post.getDislikedBy().size());
+		if (user.getLikedPosts().stream().anyMatch(el -> el.getId() == post.getId())) {
+			postDTO.setCanBeLiked(false);
+		} else {
+			postDTO.setCanBeLiked(true);
+		}
+		
+		if (user.getDislikedPosts().stream().anyMatch(el -> el.getId() == post.getId())) {
+			postDTO.setCanBeDisliked(false);
+		} else {
+			postDTO.setCanBeDisliked(true);
+		}
+		return postDTO;
 	}
+	public static List<PostDTO> fromEntityListNoUser(List<Post> posts) {
+		List<PostDTO> postsDTO = new ArrayList<>();
+		for (Post post : posts) {
+			PostDTO postDTO = new PostDTO(post.getId(), post.getUser().getUsername(), post.getDescription(), new String(post.getPicture(),  StandardCharsets.UTF_8), UserMapper.fromEntityToString(post.getTaggedUsers()));
+			postDTO.setLikes((long) post.getLikedBy().size());
+			postDTO.setDislikes((long) post.getDislikedBy().size());
+			postDTO.setCanBeLiked(false);
+			postDTO.setCanBeDisliked(false);
+			postsDTO.add(postDTO);
+		}
+		
+		return postsDTO;
+	}
+	
 	
 	public static Post toEntity(PostDTO postDTO) {
 		Post post = new Post();
@@ -23,10 +51,10 @@ public class PostMapper {
 		return post;
 	}
 	
-	public static List<PostDTO> fromEntityList(List<Post> posts) {
+	public static List<PostDTO> fromEntityList(List<Post> posts, User user) {
 		List<PostDTO> postsDTO = new ArrayList<>();
 		for (Post post : posts) {
-			postsDTO.add(fromEntity(post));
+			postsDTO.add(fromEntity(post, user));
 		}
 		return postsDTO;
 	}

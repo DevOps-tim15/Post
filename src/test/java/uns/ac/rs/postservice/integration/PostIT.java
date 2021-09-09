@@ -14,12 +14,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import uns.ac.rs.postservice.domain.Post;
 import uns.ac.rs.postservice.dto.PostDTO;
 import uns.ac.rs.postservice.service.PostService;
 import uns.ac.rs.postservice.util.InvalidDataException;
@@ -59,4 +56,25 @@ public class PostIT {
 		postDTO.setTaggedUsers(taggedUsers);
 		postService.createPost(postDTO, "jova");
 	}
+	
+	@Test
+	@Transactional
+	@Order(3)
+	public void likePost_successfully() throws Exception {
+		Long postId = 1L;
+		Long expected =2L;
+		String username = "marko";
+		PostDTO postDTO = postService.likePost(postId, username);
+		assertEquals(expected, postDTO.getLikes());
+	}
+	
+	@Test(expected = InvalidDataException.class)
+	@Transactional
+	@Order(4)
+	public void likePost_invalidPost() throws Exception {
+		Long postId = 10L;
+		String username = "marko";
+		postService.likePost(postId, username);
+	}
+
 }
