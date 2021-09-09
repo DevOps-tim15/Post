@@ -9,7 +9,9 @@ import uns.ac.rs.postservice.domain.Post;
 import uns.ac.rs.postservice.domain.User;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-	List<Post> findAllByUser(User user);
+	
+	@Query(value = "select * from post p where p.user_id = ?1", nativeQuery = true)
+	List<Post> findAllByUserId(Long userId);
 	
 	@Query(value = "select * from post p where p.user_id in(select u.id from user_t u where u.is_private = false)", nativeQuery = true)
 	List<Post> findAllPostsByPublicUsers();

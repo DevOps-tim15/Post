@@ -76,29 +76,16 @@ public class User implements UserDetails{
 	@JsonIgnoreProperties(value= {"taggedUsers"})
 	private List<Post> posts;
 	
+	@ManyToMany(mappedBy = "likedBy")
+	@JsonIgnoreProperties(value= {"likedBy"})
+	private List<Post> likedPosts;
+	
+	@ManyToMany(mappedBy = "dislikedBy")
+	@JsonIgnoreProperties(value= {"dislikedBy"})
+	private List<Post> dislikedPosts;
+	
 	public User() {
 		super();
-	}
-
-	public User(Long id, String username, String password, String email, String firstName, String lastName,
-			String phone, boolean verified, String websiteUrl, String sex, String birthDate, String biography,
-			Boolean canBeTagged, Boolean isPrivate, List<Authority> authorities) {
-		super();
-		this.id = id;
-		this.username = username;
-		this.password = password;
-		this.email = email;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.phone = phone;
-		this.verified = verified;
-		this.websiteUrl = websiteUrl;
-		this.sex = sex;
-		this.birthDate = birthDate;
-		this.biography = biography;
-		this.canBeTagged = canBeTagged;
-		this.isPrivate = isPrivate;
-		this.authorities = authorities;
 	}
 	
 	public User(Long id, String username, String password, String email, String firstName, String lastName,
@@ -123,8 +110,8 @@ public class User implements UserDetails{
 
 	public User(Long id, String username, String password, String email, String firstName, String lastName,
 			String phone, boolean verified, String websiteUrl, String sex, String birthDate, String biography,
-			Boolean canBeTagged, Boolean isPrivate, List<uns.ac.rs.postservice.domain.Authority> authorities,
-			List<Post> posts) {
+			Boolean canBeTagged, Boolean isPrivate, List<Authority> authorities, List<Post> posts,
+			List<Post> likedPosts, List<Post> dislikedPosts) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -142,6 +129,8 @@ public class User implements UserDetails{
 		this.isPrivate = isPrivate;
 		this.authorities = authorities;
 		this.posts = posts;
+		this.likedPosts = likedPosts;
+		this.dislikedPosts = dislikedPosts;
 	}
 
 	public Long getId() {
@@ -270,6 +259,22 @@ public class User implements UserDetails{
 
 	public void setPosts(List<Post> posts) {
 		this.posts = posts;
+	}
+	
+	public List<Post> getLikedPosts() {
+		return likedPosts;
+	}
+
+	public void setLikedPosts(List<Post> likedPosts) {
+		this.likedPosts = likedPosts;
+	}
+
+	public List<Post> getDislikedPosts() {
+		return dislikedPosts;
+	}
+
+	public void setDislikedPosts(List<Post> dislikedPosts) {
+		this.dislikedPosts = dislikedPosts;
 	}
 
 	@Override

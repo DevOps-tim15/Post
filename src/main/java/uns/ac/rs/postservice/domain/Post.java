@@ -1,5 +1,6 @@
 package uns.ac.rs.postservice.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -40,11 +41,20 @@ public class Post {
 	
 	@ManyToMany
 	@JoinTable(name = "post_tagged_user", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
-//	@JsonIgnore
 	private List<User> taggedUsers;
-
+	
+	@ManyToMany
+	@JoinTable(name = "post_liked_by", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+	private List<User> likedBy;
+	
+	@ManyToMany
+	@JoinTable(name = "post_disliked_by", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+	private List<User> dislikedBy;
+	
 	public Post() {
 		super();
+		this.likedBy = new ArrayList<User>();
+		this.dislikedBy = new ArrayList<User>();
 	}
 
 	public Post(Long id, User user, String description, byte[] picture, List<User> taggedUsers) {
@@ -54,6 +64,20 @@ public class Post {
 		this.description = description;
 		this.picture = picture;
 		this.taggedUsers = taggedUsers;
+		this.likedBy = new ArrayList<User>();
+		this.dislikedBy = new ArrayList<User>();
+	}
+	
+	public Post(Long id, User user, String description, byte[] picture, List<User> taggedUsers, List<User> likedBy,
+			List<User> dislikedBy) {
+		super();
+		this.id = id;
+		this.user = user;
+		this.description = description;
+		this.picture = picture;
+		this.taggedUsers = taggedUsers;
+		this.likedBy = likedBy;
+		this.dislikedBy = dislikedBy;
 	}
 
 	public Long getId() {
@@ -94,6 +118,22 @@ public class Post {
 
 	public void setTaggedUsers(List<User> taggedUsers) {
 		this.taggedUsers = taggedUsers;
+	}
+
+	public List<User> getLikedBy() {
+		return likedBy;
+	}
+
+	public void setLikedBy(List<User> likedBy) {
+		this.likedBy = likedBy;
+	}
+
+	public List<User> getDislikedBy() {
+		return dislikedBy;
+	}
+
+	public void setDislikedBy(List<User> dislikedBy) {
+		this.dislikedBy = dislikedBy;
 	}
 	
 }
