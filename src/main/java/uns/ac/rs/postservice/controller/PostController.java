@@ -1,5 +1,7 @@
 package uns.ac.rs.postservice.controller;
 
+import java.util.concurrent.ExecutionException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import uns.ac.rs.postservice.domain.User;
 import uns.ac.rs.postservice.dto.PostDTO;
@@ -53,6 +57,32 @@ public class PostController {
 			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@GetMapping(value = "/publicUsers")
+	public ResponseEntity<?> getAllPostsFromPublicUsers() {
+		try {
+			return new ResponseEntity<>(postService.getAllByPublicUsers(), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER') || hasRole('ROLE_AGENT')")
+	@GetMapping(value = "/postsToView")
+	public ResponseEntity<?> getAllPostsToView() {
+		try {
+			User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			try {
+				return new ResponseEntity<>(postService.getAllPostsToView(user.getUsername()), HttpStatus.OK);
+			} catch (JsonProcessingException | InterruptedException | ExecutionException e) {
+				return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+			}
+		} catch (InvalidDataException e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
 	
 	
 }
