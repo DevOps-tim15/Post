@@ -2,6 +2,7 @@ package uns.ac.rs.postservice.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,10 +91,11 @@ public class PostService {
 	}
 
 	public PostDTO likePost(Long postId, String username) throws InvalidDataException{
-		Post post = postRepository.findById(postId).get();
-		if (post == null) {
-			throw new InvalidDataException("User does not exist");
+		Optional<Post> getPost = postRepository.findById(postId);
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Post does not exist");
 		}
+		Post post = getPost.get();
 		User user = userRepository.findByUsername(username);
 		if (user == null) {
 			throw new InvalidDataException("Invalid user.");
