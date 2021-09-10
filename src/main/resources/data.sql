@@ -74,6 +74,16 @@ FOREIGN KEY (post_id) REFERENCES post(id),
 FOREIGN KEY (user_id) REFERENCES user_t(id)
 );
 
+CREATE TABLE IF NOT EXISTS comment
+(
+`id` INTEGER AUTO_INCREMENT,
+`text` VARCHAR(255),
+`post_id` INTEGER,
+`user_id` INTEGER,
+FOREIGN KEY (post_id) REFERENCES post(id),
+FOREIGN KEY (user_id) REFERENCES user_t(id)
+);
+
 INSERT INTO `authorities` (`user_type`) VALUES ('ROLE_REGISTERED_USER');
 INSERT INTO `authorities` (`user_type`) VALUES ('ROLE_AGENT');
 INSERT INTO `authorities` (`user_type`) VALUES ('ROLE_ADMIN');

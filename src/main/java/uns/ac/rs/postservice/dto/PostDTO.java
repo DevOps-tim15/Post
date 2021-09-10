@@ -1,5 +1,6 @@
 package uns.ac.rs.postservice.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostDTO {
@@ -15,6 +16,7 @@ public class PostDTO {
 	private Boolean canBeDisliked = true;
 	private Boolean canBeSaved = true;
 	private Boolean canBeReported = true;
+	private List<CommentDTO> comments = new ArrayList<CommentDTO>();
 	
 	public PostDTO() {
 		super();
@@ -30,7 +32,7 @@ public class PostDTO {
 	}
 	
 	public PostDTO(Long postId, String username, String description, String image, List<String> taggedUsers, Long likes, Long dislikes, 
-			Boolean canBeLiked, Boolean canBeDisliked, Boolean canBeSaved, Boolean canBeReported) {
+			Boolean canBeLiked, Boolean canBeDisliked, Boolean canBeSaved, Boolean canBeReported, List<CommentDTO> comments) {
 		super();
 		this.postId = postId;
 		this.username = username;
@@ -43,7 +45,7 @@ public class PostDTO {
 		this.canBeDisliked = canBeDisliked;
 		this.canBeSaved = canBeSaved;
 		this.canBeReported = canBeReported;
-		
+		this.comments = comments;
 	}
 
 	public String getDescription() {
@@ -131,5 +133,13 @@ public class PostDTO {
 
 	public void setCanBeReported(Boolean canBeReported) {
 		this.canBeReported = canBeReported;
+	}
+
+	public List<CommentDTO> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<CommentDTO> comments) {
+		this.comments = comments;
 	}
 }

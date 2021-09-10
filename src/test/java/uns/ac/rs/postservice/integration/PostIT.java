@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uns.ac.rs.postservice.dto.CommentDTO;
 import uns.ac.rs.postservice.dto.PostDTO;
 import uns.ac.rs.postservice.service.PostService;
 import uns.ac.rs.postservice.util.InvalidDataException;
@@ -87,6 +88,16 @@ public class PostIT {
 		List<PostDTO> postsDTO2 = postService.allLikedAndDislikedPosts(username2);
 		assertEquals(1, postsDTO.size());
 		assertEquals(0, postsDTO2.size());
+	}
+	
+	@Test
+	@Transactional
+	@Order(6)
+	public void comments_size() throws Exception {
+		String username = "marko";
+		CommentDTO commDTO = new CommentDTO(1L, username, "text");
+		PostDTO postDTO = postService.commentPost(commDTO, username);
+		assertEquals(1, postDTO.getComments().size());
 	}
 
 }
