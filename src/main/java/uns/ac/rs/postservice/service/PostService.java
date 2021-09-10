@@ -120,4 +120,44 @@ public class PostService {
 		return PostMapper.fromEntity(post, user);
 	}
 
+	public List<PostDTO> allLikedAndDislikedPosts(String username) throws InvalidDataException {
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		List<Post> posts = postRepository.findAllLikedOrDisliked(user.getId());
+		return PostMapper.fromEntityList(posts, user);
+	}
+
+	public PostDTO undoLikePost(Long postId, String username) throws InvalidDataException{
+		Optional<Post> getPost = postRepository.findById(postId);
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Post does not exist");
+		}
+		Post post = getPost.get();
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		post.getLikedBy().remove(user);
+		postRepository.save(post);
+		
+		return PostMapper.fromEntity(post, user);
+	}
+	
+	public PostDTO undoDislikePost(Long postId, String username) throws InvalidDataException{
+		Optional<Post> getPost = postRepository.findById(postId);
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Post does not exist");
+		}
+		Post post = getPost.get();
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		post.getDislikedBy().remove(user);
+		postRepository.save(post);
+		
+		return PostMapper.fromEntity(post, user);
+	}
 }

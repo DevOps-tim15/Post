@@ -96,6 +96,28 @@ public class PostController {
 	}
 	
 	@PreAuthorize("hasRole('ROLE_REGISTERED_USER') || hasRole('ROLE_AGENT')")
+	@GetMapping(value = "/undoLike/{postId}")
+	public ResponseEntity<?> undoLikePost(@PathVariable Long postId) {
+		try {
+			User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			return new ResponseEntity<>(postService.undoLikePost(postId, user.getUsername()), HttpStatus.OK);
+		} catch (InvalidDataException e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER') || hasRole('ROLE_AGENT')")
+	@GetMapping(value = "/undoDislike/{postId}")
+	public ResponseEntity<?> undoDislikePost(@PathVariable Long postId) {
+		try {
+			User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			return new ResponseEntity<>(postService.undoDislikePost(postId, user.getUsername()), HttpStatus.OK);
+		} catch (InvalidDataException e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER') || hasRole('ROLE_AGENT')")
 	@GetMapping(value = "/dislike/{postId}")
 	public ResponseEntity<?> dislikePost(@PathVariable Long postId) {
 		try {
@@ -106,4 +128,14 @@ public class PostController {
 		}
 	}
 	
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER') || hasRole('ROLE_AGENT')")
+	@GetMapping(value = "/likedAndDisliked")
+	public ResponseEntity<?> likedAndDislikedPosts() {
+		try {
+			User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			return new ResponseEntity<>(postService.allLikedAndDislikedPosts(user.getUsername()), HttpStatus.OK);
+		} catch (InvalidDataException e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
 }

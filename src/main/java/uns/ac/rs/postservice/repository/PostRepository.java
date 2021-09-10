@@ -19,4 +19,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	@Query(value = "select * from post p where p.user_id in ?1 or p.user_id in(select u.id from user_t u where u.is_private = false)", nativeQuery = true)
 	List<Post> findAllByFollowingUsers(List<Long> usersIds);
 	
+	@Query(value = "select * from post p where p.id in (select l.post_id from post_liked_by l where l.user_id = ?1) or "
+			+ "p.id in (select l.post_id from post_disliked_by l where l.user_id = ?1)", nativeQuery = true)
+	List<Post> findAllLikedOrDisliked(Long userId);
+	
 }
