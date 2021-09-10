@@ -25,6 +25,12 @@ public class PostMapper {
 		} else {
 			postDTO.setCanBeDisliked(true);
 		}
+		
+		if (user.getSavedPosts().stream().anyMatch(el -> el.getId() == post.getId())) {
+			postDTO.setCanBeSaved(false);
+		} else {
+			postDTO.setCanBeSaved(true);
+		}
 		return postDTO;
 	}
 	public static List<PostDTO> fromEntityListNoUser(List<Post> posts) {
@@ -35,6 +41,7 @@ public class PostMapper {
 			postDTO.setDislikes((long) post.getDislikedBy().size());
 			postDTO.setCanBeLiked(false);
 			postDTO.setCanBeDisliked(false);
+			postDTO.setCanBeSaved(false);
 			postsDTO.add(postDTO);
 		}
 		
@@ -47,7 +54,6 @@ public class PostMapper {
 		post.setDescription(postDTO.getDescription());
 		post.setPicture(postDTO.getImage().getBytes(StandardCharsets.UTF_8));
 		post.setTaggedUsers(new ArrayList<User>());
-//		post.setTaggedUsers(UserMapper.toEntityList(postDTO.getTaggedUsers()));
 		return post;
 	}
 	

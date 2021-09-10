@@ -13,6 +13,7 @@ public class PostDTO {
 	private Long dislikes = 0L;
 	private Boolean canBeLiked = true;
 	private Boolean canBeDisliked = true;
+	private Boolean canBeSaved = true;
 	
 	public PostDTO() {
 		super();
@@ -27,7 +28,8 @@ public class PostDTO {
 		this.taggedUsers = taggedUsers;
 	}
 	
-	public PostDTO(Long postId, String username, String description, String image, List<String> taggedUsers, Long likes, Long dislikes, Boolean canBeLiked, Boolean vcanBeDisliked) {
+	public PostDTO(Long postId, String username, String description, String image, List<String> taggedUsers, Long likes, Long dislikes, 
+			Boolean canBeLiked, Boolean canBeDisliked, Boolean canBeSaved) {
 		super();
 		this.postId = postId;
 		this.username = username;
@@ -38,6 +40,7 @@ public class PostDTO {
 		this.dislikes = dislikes;
 		this.canBeLiked = canBeLiked;
 		this.canBeDisliked = canBeDisliked;
+		this.canBeSaved = canBeSaved;
 		
 	}
 
@@ -112,5 +115,12 @@ public class PostDTO {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	
+
+	public Boolean getCanBeSaved() {
+		return canBeSaved;
+	}
+
+	public void setCanBeSaved(Boolean canBeSaved) {
+		this.canBeSaved = canBeSaved;
+	}
 }

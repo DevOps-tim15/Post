@@ -160,4 +160,29 @@ public class PostService {
 		
 		return PostMapper.fromEntity(post, user);
 	}
+
+	public PostDTO savePost(Long postId, String username) throws InvalidDataException {
+		Optional<Post> getPost = postRepository.findById(postId);
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Post does not exist");
+		}
+		Post post = getPost.get();
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		post.getSavedBy().add(user);
+		postRepository.save(post);
+		
+		return PostMapper.fromEntity(post, user);
+	}
+
+	public List<PostDTO> savedPosts(String username) throws InvalidDataException {
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		List<Post> posts = postRepository.findAllSaved(user.getId());
+		return PostMapper.fromEntityList(posts, user);
+	}
 }

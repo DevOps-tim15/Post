@@ -84,6 +84,10 @@ public class User implements UserDetails{
 	@JsonIgnoreProperties(value= {"dislikedBy"})
 	private List<Post> dislikedPosts;
 	
+	@ManyToMany(mappedBy = "savedBy")
+	@JsonIgnoreProperties(value= {"savedBy"})
+	private List<Post> savedPosts;
+	
 	public User() {
 		super();
 	}
@@ -111,7 +115,7 @@ public class User implements UserDetails{
 	public User(Long id, String username, String password, String email, String firstName, String lastName,
 			String phone, boolean verified, String websiteUrl, String sex, String birthDate, String biography,
 			Boolean canBeTagged, Boolean isPrivate, List<Authority> authorities, List<Post> posts,
-			List<Post> likedPosts, List<Post> dislikedPosts) {
+			List<Post> likedPosts, List<Post> dislikedPosts, List<Post> savedPosts) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -131,6 +135,7 @@ public class User implements UserDetails{
 		this.posts = posts;
 		this.likedPosts = likedPosts;
 		this.dislikedPosts = dislikedPosts;
+		this.savedPosts = savedPosts;
 	}
 
 	public Long getId() {
@@ -275,6 +280,14 @@ public class User implements UserDetails{
 
 	public void setDislikedPosts(List<Post> dislikedPosts) {
 		this.dislikedPosts = dislikedPosts;
+	}
+	
+	public List<Post> getSavedPosts() {
+		return savedPosts;
+	}
+
+	public void setSavedPosts(List<Post> savedPosts) {
+		this.savedPosts = savedPosts;
 	}
 
 	@Override

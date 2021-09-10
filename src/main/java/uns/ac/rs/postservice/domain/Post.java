@@ -51,6 +51,10 @@ public class Post {
 	@JoinTable(name = "post_disliked_by", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
 	private List<User> dislikedBy;
 	
+	@ManyToMany
+	@JoinTable(name = "post_saved_by", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+	private List<User> savedBy;
+	
 	public Post() {
 		super();
 		this.likedBy = new ArrayList<User>();
@@ -66,10 +70,11 @@ public class Post {
 		this.taggedUsers = taggedUsers;
 		this.likedBy = new ArrayList<User>();
 		this.dislikedBy = new ArrayList<User>();
+		this.savedBy = new ArrayList<User>(); 
 	}
 	
 	public Post(Long id, User user, String description, byte[] picture, List<User> taggedUsers, List<User> likedBy,
-			List<User> dislikedBy) {
+			List<User> dislikedBy, List<User> savedBy) {
 		super();
 		this.id = id;
 		this.user = user;
@@ -78,6 +83,7 @@ public class Post {
 		this.taggedUsers = taggedUsers;
 		this.likedBy = likedBy;
 		this.dislikedBy = dislikedBy;
+		this.savedBy = savedBy;
 	}
 
 	public Long getId() {
@@ -134,6 +140,14 @@ public class Post {
 
 	public void setDislikedBy(List<User> dislikedBy) {
 		this.dislikedBy = dislikedBy;
+	}
+
+	public List<User> getSavedBy() {
+		return savedBy;
+	}
+
+	public void setSavedBy(List<User> savedBy) {
+		this.savedBy = savedBy;
 	}
 	
 }
