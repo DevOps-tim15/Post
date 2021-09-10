@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import uns.ac.rs.postservice.domain.Post;
-import uns.ac.rs.postservice.domain.User;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 	
@@ -22,5 +21,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	@Query(value = "select * from post p where p.id in (select l.post_id from post_liked_by l where l.user_id = ?1) or "
 			+ "p.id in (select l.post_id from post_disliked_by l where l.user_id = ?1)", nativeQuery = true)
 	List<Post> findAllLikedOrDisliked(Long userId);
+	
+	@Query(value = "select * from post p where p.id in (select s.post_id from post_saved_by s where s.user_id = ?1)", nativeQuery = true)
+	List<Post> findAllSaved(Long userId);
 	
 }

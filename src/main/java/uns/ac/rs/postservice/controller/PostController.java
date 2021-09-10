@@ -138,4 +138,26 @@ public class PostController {
 			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER') || hasRole('ROLE_AGENT')")
+	@GetMapping(value = "/save/{postId}")
+	public ResponseEntity<?> savePost(@PathVariable Long postId) {
+		try {
+			User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			return new ResponseEntity<>(postService.savePost(postId, user.getUsername()), HttpStatus.OK);
+		} catch (InvalidDataException e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasRole('ROLE_REGISTERED_USER') || hasRole('ROLE_AGENT')")
+	@GetMapping(value = "/allSaved")
+	public ResponseEntity<?> savedPosts() {
+		try {
+			User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			return new ResponseEntity<>(postService.savedPosts(user.getUsername()), HttpStatus.OK);
+		} catch (InvalidDataException e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
 }
