@@ -76,5 +76,17 @@ public class PostIT {
 		String username = "marko";
 		postService.likePost(postId, username);
 	}
+	
+	@Test
+	@Transactional
+	@Order(5)
+	public void likedDislikedPosts_size() throws Exception {
+		String username1 = "jova";
+		String username2 = "marko";
+		List<PostDTO> postsDTO = postService.allLikedAndDislikedPosts(username1);
+		List<PostDTO> postsDTO2 = postService.allLikedAndDislikedPosts(username2);
+		assertEquals(1, postsDTO.size());
+		assertEquals(0, postsDTO2.size());
+	}
 
 }
