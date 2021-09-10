@@ -16,9 +16,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 @Entity
 @Table(name="post")
 public class Post {
@@ -82,6 +79,10 @@ public class Post {
 	
 	public Post(Long id, User user, String description, byte[] picture, List<User> taggedUsers, List<User> likedBy,
 			List<User> dislikedBy, List<User> savedBy, List<User> reportedBy) {
+	}
+	
+	public Post(Long id, User user, String description, byte[] picture, List<User> taggedUsers, List<User> likedBy,
+			List<User> dislikedBy, List<User> savedBy) {
 		super();
 		this.id = id;
 		this.user = user;
@@ -157,7 +158,6 @@ public class Post {
 	public void setSavedBy(List<User> savedBy) {
 		this.savedBy = savedBy;
 	}
-
 	public List<User> getReportedBy() {
 		return reportedBy;
 	}

@@ -294,7 +294,6 @@ public class User implements UserDetails{
 	public void setSavedPosts(List<Post> savedPosts) {
 		this.savedPosts = savedPosts;
 	}
-	
 	public List<Post> getReportedPosts() {
 		return reportedPosts;
 	}

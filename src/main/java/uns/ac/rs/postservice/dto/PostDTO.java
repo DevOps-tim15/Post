@@ -43,6 +43,7 @@ public class PostDTO {
 		this.canBeDisliked = canBeDisliked;
 		this.canBeSaved = canBeSaved;
 		this.canBeReported = canBeReported;
+		
 	}
 
 	public String getDescription() {
@@ -124,7 +125,6 @@ public class PostDTO {
 	public void setCanBeSaved(Boolean canBeSaved) {
 		this.canBeSaved = canBeSaved;
 	}
-
 	public Boolean getCanBeReported() {
 		return canBeReported;
 	}

@@ -184,7 +184,6 @@ public class PostService {
 		List<Post> posts = postRepository.findAllSaved(user.getId());
 		return PostMapper.fromEntityList(posts, user);
 	}
-
 	public PostDTO reportPost(Long postId, String username) throws InvalidDataException {
 		Optional<Post> getPost = postRepository.findById(postId);
 		if (!getPost.isPresent()) {
