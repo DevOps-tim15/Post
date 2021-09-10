@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -184,5 +183,20 @@ public class PostService {
 		}
 		List<Post> posts = postRepository.findAllSaved(user.getId());
 		return PostMapper.fromEntityList(posts, user);
+	}
+	public PostDTO reportPost(Long postId, String username) throws InvalidDataException {
+		Optional<Post> getPost = postRepository.findById(postId);
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Post does not exist");
+		}
+		Post post = getPost.get();
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		post.getReportedBy().add(user);
+		postRepository.save(post);
+		
+		return PostMapper.fromEntity(post, user);
 	}
 }

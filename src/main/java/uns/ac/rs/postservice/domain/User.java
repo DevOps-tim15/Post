@@ -87,6 +87,10 @@ public class User implements UserDetails{
 	@ManyToMany(mappedBy = "savedBy")
 	@JsonIgnoreProperties(value= {"savedBy"})
 	private List<Post> savedPosts;
+
+	@ManyToMany(mappedBy = "reportedBy")
+	@JsonIgnoreProperties(value= {"reportedBy"})
+	private List<Post> reportedPosts;
 	
 	public User() {
 		super();
@@ -115,7 +119,7 @@ public class User implements UserDetails{
 	public User(Long id, String username, String password, String email, String firstName, String lastName,
 			String phone, boolean verified, String websiteUrl, String sex, String birthDate, String biography,
 			Boolean canBeTagged, Boolean isPrivate, List<Authority> authorities, List<Post> posts,
-			List<Post> likedPosts, List<Post> dislikedPosts, List<Post> savedPosts) {
+			List<Post> likedPosts, List<Post> dislikedPosts, List<Post> savedPosts, List<Post> reportedPosts) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -136,6 +140,7 @@ public class User implements UserDetails{
 		this.likedPosts = likedPosts;
 		this.dislikedPosts = dislikedPosts;
 		this.savedPosts = savedPosts;
+		this.reportedPosts = reportedPosts;
 	}
 
 	public Long getId() {
@@ -288,6 +293,13 @@ public class User implements UserDetails{
 
 	public void setSavedPosts(List<Post> savedPosts) {
 		this.savedPosts = savedPosts;
+	}
+	public List<Post> getReportedPosts() {
+		return reportedPosts;
+	}
+
+	public void setReportedPosts(List<Post> reportedPosts) {
+		this.reportedPosts = reportedPosts;
 	}
 
 	@Override

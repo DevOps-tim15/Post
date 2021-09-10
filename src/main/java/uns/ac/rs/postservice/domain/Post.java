@@ -16,9 +16,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 @Entity
 @Table(name="post")
 public class Post {
@@ -55,10 +52,16 @@ public class Post {
 	@JoinTable(name = "post_saved_by", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
 	private List<User> savedBy;
 	
+	@ManyToMany
+	@JoinTable(name = "post_reported_by", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+	private List<User> reportedBy;
+	
 	public Post() {
 		super();
 		this.likedBy = new ArrayList<User>();
 		this.dislikedBy = new ArrayList<User>();
+		this.savedBy = new ArrayList<User>();
+		this.reportedBy = new ArrayList<User>();
 	}
 
 	public Post(Long id, User user, String description, byte[] picture, List<User> taggedUsers) {
@@ -71,6 +74,11 @@ public class Post {
 		this.likedBy = new ArrayList<User>();
 		this.dislikedBy = new ArrayList<User>();
 		this.savedBy = new ArrayList<User>(); 
+		this.reportedBy = new ArrayList<User>();
+	}
+	
+	public Post(Long id, User user, String description, byte[] picture, List<User> taggedUsers, List<User> likedBy,
+			List<User> dislikedBy, List<User> savedBy, List<User> reportedBy) {
 	}
 	
 	public Post(Long id, User user, String description, byte[] picture, List<User> taggedUsers, List<User> likedBy,
@@ -84,6 +92,7 @@ public class Post {
 		this.likedBy = likedBy;
 		this.dislikedBy = dislikedBy;
 		this.savedBy = savedBy;
+		this.reportedBy = reportedBy;
 	}
 
 	public Long getId() {
@@ -148,6 +157,13 @@ public class Post {
 
 	public void setSavedBy(List<User> savedBy) {
 		this.savedBy = savedBy;
+	}
+	public List<User> getReportedBy() {
+		return reportedBy;
+	}
+
+	public void setReportedBy(List<User> reportedBy) {
+		this.reportedBy = reportedBy;
 	}
 	
 }

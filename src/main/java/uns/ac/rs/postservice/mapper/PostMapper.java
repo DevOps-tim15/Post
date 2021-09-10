@@ -31,6 +31,12 @@ public class PostMapper {
 		} else {
 			postDTO.setCanBeSaved(true);
 		}
+		
+		if (user.getReportedPosts().stream().anyMatch(el -> el.getId() == post.getId())) {
+			postDTO.setCanBeReported(false);
+		} else {
+			postDTO.setCanBeReported(true);
+		}
 		return postDTO;
 	}
 	public static List<PostDTO> fromEntityListNoUser(List<Post> posts) {
@@ -42,6 +48,7 @@ public class PostMapper {
 			postDTO.setCanBeLiked(false);
 			postDTO.setCanBeDisliked(false);
 			postDTO.setCanBeSaved(false);
+			postDTO.setCanBeReported(false);
 			postsDTO.add(postDTO);
 		}
 		
