@@ -27,7 +27,7 @@ public class Comment {
     @JoinColumn(name="post_id")
 	private Post post;
 	
-	@Column(name = "decscription")
+	@Column(name = "text")
 	private String text;
 
 	public Comment() {

@@ -18,6 +18,7 @@ import uns.ac.rs.postservice.dto.CommentDTO;
 import uns.ac.rs.postservice.dto.PostDTO;
 import uns.ac.rs.postservice.kafka.Producer;
 import uns.ac.rs.postservice.mapper.PostMapper;
+import uns.ac.rs.postservice.repository.CommentRepository;
 import uns.ac.rs.postservice.repository.PostRepository;
 import uns.ac.rs.postservice.repository.UserRepository;
 import uns.ac.rs.postservice.util.InvalidDataException;
@@ -30,6 +31,9 @@ public class PostService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private CommentRepository commentRepository;
 	
 	@Autowired
 	private Producer producer;
@@ -217,8 +221,8 @@ public class PostService {
 		comment.setPost(post);
 		comment.setText(commentDTO.getText());
 		comment.setUser(user);
-		post.getComments().add(comment);
-		postRepository.save(post);
+//		post.getComments().add(comment);
+		commentRepository.save(comment);
 		return PostMapper.fromEntity(post, user);
 	}
 }
