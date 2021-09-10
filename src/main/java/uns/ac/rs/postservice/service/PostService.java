@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import uns.ac.rs.postservice.domain.Comment;
 import uns.ac.rs.postservice.domain.Post;
 import uns.ac.rs.postservice.domain.User;
+import uns.ac.rs.postservice.dto.CommentDTO;
 import uns.ac.rs.postservice.dto.PostDTO;
 import uns.ac.rs.postservice.kafka.Producer;
 import uns.ac.rs.postservice.mapper.PostMapper;
@@ -197,6 +199,26 @@ public class PostService {
 		post.getReportedBy().add(user);
 		postRepository.save(post);
 		
+		return PostMapper.fromEntity(post, user);
+	}
+
+	public PostDTO commentPost(CommentDTO commentDTO, String username) throws InvalidDataException {
+		Optional<Post> getPost = postRepository.findById(commentDTO.getPostId());
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Post does not exist");
+		}
+		Post post = getPost.get();
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		
+		Comment comment = new Comment();
+		comment.setPost(post);
+		comment.setText(commentDTO.getText());
+		comment.setUser(user);
+		post.getComments().add(comment);
+		postRepository.save(post);
 		return PostMapper.fromEntity(post, user);
 	}
 }

@@ -14,6 +14,7 @@ public class PostMapper {
 		PostDTO postDTO = new PostDTO(post.getId(), post.getUser().getUsername(), post.getDescription(), new String(post.getPicture(),  StandardCharsets.UTF_8), UserMapper.fromEntityToString(post.getTaggedUsers()));
 		postDTO.setLikes((long) post.getLikedBy().size());
 		postDTO.setDislikes((long) post.getDislikedBy().size());
+		postDTO.setComments(CommentMapper.fromEntityList(post.getComments()));
 		if (user.getLikedPosts().stream().anyMatch(el -> el.getId() == post.getId())) {
 			postDTO.setCanBeLiked(false);
 		} else {
@@ -43,6 +44,7 @@ public class PostMapper {
 		List<PostDTO> postsDTO = new ArrayList<>();
 		for (Post post : posts) {
 			PostDTO postDTO = new PostDTO(post.getId(), post.getUser().getUsername(), post.getDescription(), new String(post.getPicture(),  StandardCharsets.UTF_8), UserMapper.fromEntityToString(post.getTaggedUsers()));
+			postDTO.setComments(CommentMapper.fromEntityList(post.getComments()));
 			postDTO.setLikes((long) post.getLikedBy().size());
 			postDTO.setDislikes((long) post.getDislikedBy().size());
 			postDTO.setCanBeLiked(false);

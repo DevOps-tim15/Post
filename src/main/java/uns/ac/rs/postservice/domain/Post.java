@@ -3,6 +3,7 @@ package uns.ac.rs.postservice.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,7 +15,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name="post")
@@ -56,12 +60,17 @@ public class Post {
 	@JoinTable(name = "post_reported_by", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
 	private List<User> reportedBy;
 	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "post", fetch = FetchType.LAZY)
+	@JsonIgnoreProperties("post")
+	private List<Comment> comments;
+	
 	public Post() {
 		super();
 		this.likedBy = new ArrayList<User>();
 		this.dislikedBy = new ArrayList<User>();
 		this.savedBy = new ArrayList<User>();
 		this.reportedBy = new ArrayList<User>();
+		this.comments = new ArrayList<Comment>();
 	}
 
 	public Post(Long id, User user, String description, byte[] picture, List<User> taggedUsers) {
@@ -75,14 +84,12 @@ public class Post {
 		this.dislikedBy = new ArrayList<User>();
 		this.savedBy = new ArrayList<User>(); 
 		this.reportedBy = new ArrayList<User>();
+		this.comments = new ArrayList<Comment>();
 	}
 	
-	public Post(Long id, User user, String description, byte[] picture, List<User> taggedUsers, List<User> likedBy,
-			List<User> dislikedBy, List<User> savedBy, List<User> reportedBy) {
-	}
 	
 	public Post(Long id, User user, String description, byte[] picture, List<User> taggedUsers, List<User> likedBy,
-			List<User> dislikedBy, List<User> savedBy) {
+		List<User> dislikedBy, List<User> savedBy, List<User> reportedBy, List<Comment> comments) {
 		super();
 		this.id = id;
 		this.user = user;
@@ -93,6 +100,7 @@ public class Post {
 		this.dislikedBy = dislikedBy;
 		this.savedBy = savedBy;
 		this.reportedBy = reportedBy;
+		this.comments = comments;
 	}
 
 	public Long getId() {
@@ -164,6 +172,14 @@ public class Post {
 
 	public void setReportedBy(List<User> reportedBy) {
 		this.reportedBy = reportedBy;
+	}
+
+	public List<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<Comment> comments) {
+		this.comments = comments;
 	}
 	
 }
