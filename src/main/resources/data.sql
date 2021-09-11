@@ -74,6 +74,14 @@ FOREIGN KEY (post_id) REFERENCES post(id),
 FOREIGN KEY (user_id) REFERENCES user_t(id)
 );
 
+CREATE TABLE IF NOT EXISTS post_reported_by
+(
+`post_id` INTEGER,
+`user_id` INTEGER,
+FOREIGN KEY (post_id) REFERENCES post(id),
+FOREIGN KEY (user_id) REFERENCES user_t(id)
+);
+
 CREATE TABLE IF NOT EXISTS comment
 (
 `id` INTEGER AUTO_INCREMENT,
@@ -97,5 +105,4 @@ INSERT INTO user_authority (user_id, authority_id) VALUES (1, 1), (2,1);
 INSERT INTO verification_tokens (`token`, `user_id`) VALUES ('joca-token', 1), ('marko-token',2);
 INSERT INTO `post`(`decscription`, `picture`, `user_id`) VALUES ('description', RAWTOHEX('Test'), '1');
 INSERT INTO `post_liked_by` (`post_id`,`user_id`) VALUES ('1', '1');
-
-
+INSERT INTO `post_reported_by` (`post_id`,`user_id`) VALUES ('1', '2');
