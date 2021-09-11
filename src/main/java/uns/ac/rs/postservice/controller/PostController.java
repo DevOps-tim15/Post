@@ -183,4 +183,16 @@ public class PostController {
 			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@GetMapping(value = "/reported")
+	public ResponseEntity<?> getAllReportedPosts() {
+		try {
+			return new ResponseEntity<>(postService.reportedPosts(), HttpStatus.OK);
+		} catch (InvalidDataException e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
 }

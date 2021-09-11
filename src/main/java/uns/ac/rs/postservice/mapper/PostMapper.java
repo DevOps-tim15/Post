@@ -45,6 +45,7 @@ public class PostMapper {
 		for (Post post : posts) {
 			PostDTO postDTO = new PostDTO(post.getId(), post.getUser().getUsername(), post.getDescription(), new String(post.getPicture(),  StandardCharsets.UTF_8), UserMapper.fromEntityToString(post.getTaggedUsers()));
 			postDTO.setComments(CommentMapper.fromEntityList(post.getComments()));
+			postDTO.setReportedBy(UserMapper.fromEntityToString(post.getReportedBy()));
 			postDTO.setLikes((long) post.getLikedBy().size());
 			postDTO.setDislikes((long) post.getDislikedBy().size());
 			postDTO.setCanBeLiked(false);

@@ -1,6 +1,7 @@
 package uns.ac.rs.postservice.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,5 +25,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	
 	@Query(value = "select * from post p where p.id in (select s.post_id from post_saved_by s where s.user_id = ?1)", nativeQuery = true)
 	List<Post> findAllSaved(Long userId);
+	
+	@Query(value = "select * from post p where p.id in (select r.post_id from post_reported_by r)", nativeQuery = true)
+	Set<Post> findAllReported();
 	
 }

@@ -17,6 +17,7 @@ public class PostDTO {
 	private Boolean canBeSaved = true;
 	private Boolean canBeReported = true;
 	private List<CommentDTO> comments = new ArrayList<CommentDTO>();
+	private List<String> reportedBy = new ArrayList<String>();
 	
 	public PostDTO() {
 		super();
@@ -32,7 +33,7 @@ public class PostDTO {
 	}
 	
 	public PostDTO(Long postId, String username, String description, String image, List<String> taggedUsers, Long likes, Long dislikes, 
-			Boolean canBeLiked, Boolean canBeDisliked, Boolean canBeSaved, Boolean canBeReported, List<CommentDTO> comments) {
+			Boolean canBeLiked, Boolean canBeDisliked, Boolean canBeSaved, Boolean canBeReported, List<CommentDTO> comments, List<String> reportedBy) {
 		super();
 		this.postId = postId;
 		this.username = username;
@@ -46,6 +47,7 @@ public class PostDTO {
 		this.canBeSaved = canBeSaved;
 		this.canBeReported = canBeReported;
 		this.comments = comments;
+		this.reportedBy = reportedBy;
 	}
 
 	public String getDescription() {
@@ -141,5 +143,13 @@ public class PostDTO {
 
 	public void setComments(List<CommentDTO> comments) {
 		this.comments = comments;
+	}
+
+	public List<String> getReportedBy() {
+		return reportedBy;
+	}
+
+	public void setReportedBy(List<String> reportedBy) {
+		this.reportedBy = reportedBy;
 	}
 }
