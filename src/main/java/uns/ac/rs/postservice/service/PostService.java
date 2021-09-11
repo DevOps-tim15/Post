@@ -3,6 +3,7 @@ package uns.ac.rs.postservice.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -221,8 +222,12 @@ public class PostService {
 		comment.setPost(post);
 		comment.setText(commentDTO.getText());
 		comment.setUser(user);
-//		post.getComments().add(comment);
 		commentRepository.save(comment);
 		return PostMapper.fromEntity(post, user);
+	}
+
+	public List<PostDTO> reportedPosts() throws InvalidDataException{
+		Set<Post> posts = postRepository.findAllReported();
+		return PostMapper.fromEntityListNoUser(new ArrayList<>(posts));
 	}
 }
