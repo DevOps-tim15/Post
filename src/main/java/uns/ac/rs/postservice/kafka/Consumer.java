@@ -38,7 +38,6 @@ public class Consumer {
 		try {
 			message = objectMapper.readValue(value, UserMessage.class);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("Consumer has read message!");
