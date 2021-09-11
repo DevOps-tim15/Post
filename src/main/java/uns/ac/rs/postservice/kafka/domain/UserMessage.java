@@ -1,13 +1,17 @@
 package uns.ac.rs.postservice.kafka.domain;
 
 import uns.ac.rs.postservice.domain.User;
+import uns.ac.rs.postservice.domain.UserType;
 
 public class UserMessage {
 	
 	private User user;
 	
+	private String oldUsername;
+	
 	private String type;
 
+	private UserType role;
 	
 	public UserMessage() {
 		super();
@@ -17,6 +21,30 @@ public class UserMessage {
 		super();
 		this.user = user;
 		this.type = type;
+	}
+
+	public UserMessage(User user, String oldUsername, UserType role, String type) {
+		super();
+		this.user = user;
+		this.oldUsername = oldUsername;
+		this.role = role;
+		this.type = type;
+	}
+	
+
+	public UserType getRole() {
+		return role;
+	}
+
+	public void setRole(UserType role) {
+		this.role = role;
+	}
+	public String getOldUsername() {
+		return oldUsername;
+	}
+
+	public void setOldUsername(String oldUsername) {
+		this.oldUsername = oldUsername;
 	}
 
 	public User getUser() {
