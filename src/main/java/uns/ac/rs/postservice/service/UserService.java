@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -102,6 +103,7 @@ public class UserService implements UserDetailsService{
 		authorities.add(a);
 		user.setAuthorities(authorities);
 		user = this.userRepository.save(user);
+		SecurityContextHolder.clearContext();
 		return u;
 	}
 	
