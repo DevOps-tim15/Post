@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uns.ac.rs.postservice.kafka.domain.UserMessage;
 import uns.ac.rs.postservice.service.UserService;
+import uns.ac.rs.postservice.util.InvalidDataException;
+
 
 @Service
 public class Consumer {
@@ -28,7 +30,7 @@ public class Consumer {
 	private KafkaTemplate<String, String> kafkaTemp;
 	
 	@KafkaListener(topics="auth-topic", groupId="mygroup-post")
-	public void consumeFromTopic(ConsumerRecord<String, String> consumerRecord) throws JsonProcessingException {
+	public void consumeFromTopic(ConsumerRecord<String, String> consumerRecord) throws JsonProcessingException, InvalidDataException {
 		String value = consumerRecord.value();
 		System.out.println("Consummed message " + value);
 		
@@ -45,10 +47,9 @@ public class Consumer {
 				userService.saveRegisteredUser(message.getUser());
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
-//				UserMessage um = new UserMessage(message.getUser(), "registration-rollback");
-//				String val = objectMapper.writeValueAsString(um);
-//				kafkaTemp.send("post-topic" ,val);
 			}
+		}else if(message.getType().equals("update")) {
+			userService.updateUser(message.getUser(), message.getOldUsername(), message.getRole());
 		}
 
 	}
