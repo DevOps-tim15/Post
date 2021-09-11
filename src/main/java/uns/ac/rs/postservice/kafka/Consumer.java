@@ -1,9 +1,12 @@
 package uns.ac.rs.postservice.kafka;
 
+import java.io.UnsupportedEncodingException;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,5 +54,20 @@ public class Consumer {
 			userService.updateUser(message.getUser(), message.getOldUsername(), message.getRole());
 		}
 
+	}
+	
+	@KafkaListener(topics="user-topic", groupId="mygroup-post")
+	public void consumeFromTopicUser(ConsumerRecord<String, String> consumerRecord) throws JsonProcessingException, MailException, UnsupportedEncodingException, InterruptedException {
+		String value = consumerRecord.value();
+		System.out.println("Consummed message " + value);
+		
+		UserMessage message = null;
+		try {
+			message = objectMapper.readValue(value, UserMessage.class);
+		} catch (Exception e) {
+		}
+		if(message.getType().equals("remove")) {
+			userService.deleteUser(message.getUser());
+		} 
 	}
 }
