@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -189,6 +190,16 @@ public class PostController {
 	public ResponseEntity<?> getAllReportedPosts() {
 		try {
 			return new ResponseEntity<>(postService.reportedPosts(), HttpStatus.OK);
+		} catch (InvalidDataException e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@DeleteMapping(value = "/remove/{postId}")
+	public ResponseEntity<?> getAllReportedPosts(@PathVariable Long postId) {
+		try {
+			return new ResponseEntity<>(postService.removePost(postId), HttpStatus.OK);
 		} catch (InvalidDataException e) {
 			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
