@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,8 +18,10 @@ import uns.ac.rs.postservice.domain.Post;
 import uns.ac.rs.postservice.domain.User;
 import uns.ac.rs.postservice.dto.CommentDTO;
 import uns.ac.rs.postservice.dto.PostDTO;
+import uns.ac.rs.postservice.dto.SearchDTO;
 import uns.ac.rs.postservice.kafka.Producer;
 import uns.ac.rs.postservice.mapper.PostMapper;
+import uns.ac.rs.postservice.mapper.SearchMapper;
 import uns.ac.rs.postservice.repository.CommentRepository;
 import uns.ac.rs.postservice.repository.PostRepository;
 import uns.ac.rs.postservice.repository.UserRepository;
@@ -228,6 +231,34 @@ public class PostService {
 
 	public List<PostDTO> reportedPosts() throws InvalidDataException{
 		Set<Post> posts = postRepository.findAllReported();
+		return PostMapper.fromEntityListNoUser(new ArrayList<>(posts));
+	}
+	
+	public SearchDTO search(String username) throws InvalidDataException, JsonMappingException, JsonProcessingException, InterruptedException, ExecutionException {
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			return null;
+		}
+		String loggedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+		Boolean following = false;
+		if(!loggedUsername.contentEquals("anonymousUser")) {
+			List<User> followingUsers = producer.getFollowing(loggedUsername);
+			for(User u : followingUsers) {
+				if(u.getUsername().equals(username)) {
+					following = true;
+					break;
+				}
+			}
+		}
+		List<PostDTO> userPosts = this.getAllByUser(username);
+		List<PostDTO> taggedPosts = this.getAllTagged(username);
+		SearchDTO dto = SearchMapper.fromEntity(user, following, userPosts, taggedPosts);
+		return dto;
+	}
+	
+	public List<PostDTO> getAllTagged(String username) {
+		User user = userRepository.findByUsername(username);
+		Set<Post> posts = postRepository.findAllTagged(user.getId());
 		return PostMapper.fromEntityListNoUser(new ArrayList<>(posts));
 	}
 }

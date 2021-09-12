@@ -194,5 +194,12 @@ public class PostController {
 		}
 	}
 	
-	
+	@GetMapping(value = "/search/{username}")
+	public ResponseEntity<?> search(@PathVariable String username) {
+		try {
+			return new ResponseEntity<>(postService.search(username), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
 }
