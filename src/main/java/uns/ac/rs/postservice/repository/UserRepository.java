@@ -10,5 +10,9 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	User findByEmail(String email);
 	User findByUsername(String username);
 	List<User> findByCanBeTaggedTrue();
+	List<User> findByCanBeTaggedTrueAndIsPrivateFalse();
+	List<User> findByCanBeTaggedTrueAndIsPrivateTrue();
+
 	List<User> findByIsPrivateFalse();
+	List<User> findByIsPrivateTrue();
 }

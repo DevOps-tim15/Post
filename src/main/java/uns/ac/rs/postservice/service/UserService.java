@@ -22,6 +22,7 @@ import uns.ac.rs.postservice.domain.Post;
 import uns.ac.rs.postservice.domain.User;
 import uns.ac.rs.postservice.domain.UserType;
 import uns.ac.rs.postservice.kafka.Producer;
+import uns.ac.rs.postservice.kafka.domain.UsersFollowBlockMute;
 import uns.ac.rs.postservice.repository.AuthorityRepository;
 import uns.ac.rs.postservice.repository.PostRepository;
 import uns.ac.rs.postservice.repository.UserRepository;
@@ -145,15 +146,30 @@ public class UserService implements UserDetailsService{
 			throw new UsernameNotFoundException(String.format("User with username '%s' not found", username));
 	}
 
-	public List<String> getAllUsersForTagging() throws InvalidDataException{
-		List<User> users = userRepository.findByCanBeTaggedTrue();
+	public List<String> getAllUsersForTagging() throws InvalidDataException, JsonMappingException, JsonProcessingException, InterruptedException, ExecutionException{
+		List<User> users = userRepository.findByCanBeTaggedTrueAndIsPrivateFalse();
 		List<String> usernames = new ArrayList<String>();
 		for (User user : users) {
 			System.out.println(user.getUsername());
 			usernames.add(user.getUsername());
-//			if (containsName(user.getAuthorities(), UserType.ROLE_REGISTERED_USER) || containsName(user.getAuthorities(), UserType.ROLE_AGENT)) {
-//				usernames.add(user.getUsername());
-//			}
+		}
+		
+		String loggedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+		System.out.println(loggedUsername);
+		if(!loggedUsername.equals("anonymousUser")) {
+
+			UsersFollowBlockMute usersFBM = producer.getFollowBlockMute(loggedUsername);
+			for(User u : usersFBM.getFollowing()) {
+				if((!usernames.contains(u.getUsername()))) {
+					usernames.add(u.getUsername());
+				}
+			}
+			
+			for(User u : usersFBM.getBlock()) {
+				if(usernames.contains(u.getUsername())) {
+					usernames.remove(u.getUsername());
+				}
+			}
 		}
 		return usernames;
 	}
@@ -171,10 +187,16 @@ public class UserService implements UserDetailsService{
 		String loggedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 		System.out.println(loggedUsername);
 		if(!loggedUsername.equals("anonymousUser")) {
-			List<User> followingUsers = producer.getFollowing(loggedUsername);
-			for(User u : followingUsers) {
-				if(!usernames.contains(u.getUsername())) {
-					usernames.add(u.getUsername());
+			List<User> privateUsers = userRepository.findByIsPrivateTrue();
+			for (User user : privateUsers) {
+				System.out.println(user.getUsername());
+				usernames.add(user.getUsername());
+			}
+			UsersFollowBlockMute usersFBM = producer.getFollowBlockMute(loggedUsername);
+
+			for(User u : usersFBM.getBlock()) {
+				if(usernames.contains(u.getUsername())) {
+					usernames.remove(u.getUsername());
 				}
 			}
 			
