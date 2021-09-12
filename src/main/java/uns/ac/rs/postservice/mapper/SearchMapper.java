@@ -12,7 +12,10 @@ public class SearchMapper {
 	
 	public static SearchDTO fromEntity(User user, Boolean isFollowing, List<PostDTO> userPosts, List<PostDTO> taggedPosts) {
 		SearchDTO dto = new SearchDTO();
-		dto.setUser(new UserSearchDTO(user.getUsername(), user.getFirstName(), user.getLastName(), user.getWebsiteUrl(), user.getSex(), user.getBirthDate(), user.getBiography(), isFollowing));
+		dto.setUser(new UserSearchDTO(user.getUsername(), user.getFirstName(), user.getLastName(), user.getWebsiteUrl(), user.getSex(), user.getBirthDate(), user.getBiography(), isFollowing, user.getIsPrivate()));
+		if (!isFollowing && user.getIsPrivate()) {
+			return dto;
+		}
 		dto.setPostedPhotos(userPosts);
 		dto.setTaggedPhotos(taggedPosts);
 		return dto;
