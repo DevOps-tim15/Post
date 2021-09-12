@@ -1,7 +1,5 @@
 package uns.ac.rs.postservice.dto;
 
-import javax.persistence.Column;
-
 public class UserSearchDTO {
 
 	private String username;
@@ -12,12 +10,13 @@ public class UserSearchDTO {
 	private String birthDate;
 	private String biography;
 	private Boolean isFollowing;
+	private Boolean isPrivate;
 	
 	public UserSearchDTO() {
 		super();
 	}
 	public UserSearchDTO(String username, String firstName, String lastName, String websiteUrl, String sex,
-			String birthDate, String biography, Boolean isFollowing) {
+			String birthDate, String biography, Boolean isFollowing, Boolean isPrivate) {
 		super();
 		this.username = username;
 		this.firstName = firstName;
@@ -27,6 +26,7 @@ public class UserSearchDTO {
 		this.birthDate = birthDate;
 		this.biography = biography;
 		this.isFollowing = isFollowing;
+		this.isPrivate = isPrivate;
 	}
 	public String getUsername() {
 		return username;
@@ -75,5 +75,11 @@ public class UserSearchDTO {
 	}
 	public void setIsFollowing(Boolean isFollowing) {
 		this.isFollowing = isFollowing;
+	}
+	public Boolean getIsPrivate() {
+		return isPrivate;
+	}
+	public void setIsPrivate(Boolean isPrivate) {
+		this.isPrivate = isPrivate;
 	}
 }

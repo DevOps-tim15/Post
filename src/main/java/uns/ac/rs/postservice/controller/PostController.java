@@ -206,7 +206,7 @@ public class PostController {
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@DeleteMapping(value = "/remove/{postId}")
-	public ResponseEntity<?> getAllReportedPosts(@PathVariable Long postId) {
+	public ResponseEntity<?> removePost(@PathVariable Long postId) {
 		try {
 			return new ResponseEntity<>(postService.removePost(postId), HttpStatus.OK);
 		} catch (InvalidDataException e) {

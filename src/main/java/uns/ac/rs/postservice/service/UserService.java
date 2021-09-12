@@ -175,17 +175,13 @@ public class UserService implements UserDetailsService{
 	}
 	
 	public List<String> getAllUsersForSearch() throws InvalidDataException, JsonMappingException, JsonProcessingException, InterruptedException, ExecutionException{
-		List<User> users = userRepository.findByIsPrivateFalse();
+		List<User> users = userRepository.findAllRegisteredUsers();
 		List<String> usernames = new ArrayList<String>();
+		String loggedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 		for (User user : users) {
 			System.out.println(user.getUsername());
 			usernames.add(user.getUsername());
-//			if (containsName(user.getAuthorities(), UserType.ROLE_REGISTERED_USER) || containsName(user.getAuthorities(), UserType.ROLE_AGENT)) {
-//				usernames.add(user.getUsername());
-//			}
 		}
-		String loggedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-		System.out.println(loggedUsername);
 		if(!loggedUsername.equals("anonymousUser")) {
 			List<User> privateUsers = userRepository.findByIsPrivateTrue();
 			for (User user : privateUsers) {
