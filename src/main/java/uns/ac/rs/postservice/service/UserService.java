@@ -14,9 +14,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import uns.ac.rs.postservice.domain.Authority;
+import uns.ac.rs.postservice.domain.Post;
 import uns.ac.rs.postservice.domain.User;
 import uns.ac.rs.postservice.domain.UserType;
 import uns.ac.rs.postservice.repository.AuthorityRepository;
+import uns.ac.rs.postservice.repository.PostRepository;
 import uns.ac.rs.postservice.repository.UserRepository;
 import uns.ac.rs.postservice.util.InvalidDataException;
 
@@ -28,6 +30,9 @@ public class UserService implements UserDetailsService{
 	
 	@Autowired
 	private AuthorityRepository authorityRepository;
+	
+	@Autowired
+	private PostRepository postRepository;
 	
 	public User saveRegisteredUser(User user) throws InvalidDataException {
 		System.out.println(user);
@@ -146,6 +151,21 @@ public class UserService implements UserDetailsService{
 	}
 	public boolean containsName(List<Authority> list, UserType userType){
 	    return list.stream().anyMatch(o -> o.getUserType().equals(userType));
+	}
+
+	public void deleteUser(User user) {
+		User u = userRepository.findByUsername(user.getUsername());
+		userRepository.delete(u);
+		List<Post> posts = postRepository.findAllByUserId(user.getId());
+		for (Post post : posts) {
+			postRepository.delete(post);
+		}
+		List<Post> postsTaggedByUser = postRepository.getAllTaggedByUser(u.getId());
+		for (Post post : postsTaggedByUser) {
+			post.getTaggedUsers().remove(u);
+			postRepository.save(post);
+		}
+		
 	}
 
 }
