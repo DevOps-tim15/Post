@@ -17,8 +17,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uns.ac.rs.postservice.domain.Post;
 import uns.ac.rs.postservice.dto.CommentDTO;
 import uns.ac.rs.postservice.dto.PostDTO;
+import uns.ac.rs.postservice.repository.PostRepository;
 import uns.ac.rs.postservice.service.PostService;
 import uns.ac.rs.postservice.util.InvalidDataException;
 
@@ -31,6 +33,9 @@ public class PostIT {
 	
 	@Autowired
 	private PostService postService;
+	
+	@Autowired
+	private PostRepository postRepository;
 	
 	@Test
 	@Transactional
@@ -99,5 +104,23 @@ public class PostIT {
 		PostDTO postDTO = postService.commentPost(commDTO, username);
 		assertEquals(1, postDTO.getComments().size());
 	}
-
+	
+	@Test
+	@Transactional
+	@Order(7)
+	public void removeInappropriatePost_successfully() throws Exception {
+		Long postId = 1L;
+		Long id= postService.removePost(postId);
+		assertEquals(postId, id);
+		List<Post> posts = postRepository.findAll();
+		assertEquals(0, posts.size());
+	}
+	
+	@Test(expected = InvalidDataException.class)
+	@Transactional
+	@Order(8)
+	public void removeInappropriatePost_wrongId() throws Exception {
+		Long postId = 10L;
+		postService.removePost(postId);
+	}
 }

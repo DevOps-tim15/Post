@@ -4,7 +4,6 @@ ARG STAGE=dev
 WORKDIR /usr/src/post-service
 COPY . .
 RUN mvn package -P${STAGE} -DskipTests
-RUN mvn -B clean verify -Dspring.profiles.active=test
 
 FROM openjdk:11.0-jdk AS appServerRuntime
 WORKDIR /app

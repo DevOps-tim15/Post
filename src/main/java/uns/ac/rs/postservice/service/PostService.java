@@ -261,4 +261,14 @@ public class PostService {
 		Set<Post> posts = postRepository.findAllTagged(user.getId());
 		return PostMapper.fromEntityListNoUser(new ArrayList<>(posts));
 	}
+
+	public Long removePost(Long postId) throws InvalidDataException{
+		Optional<Post> getPost = postRepository.findById(postId);
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Wrong post id!");
+		}
+		Post post = getPost.get();
+		postRepository.delete(post);
+		return postId;
+	}
 }
