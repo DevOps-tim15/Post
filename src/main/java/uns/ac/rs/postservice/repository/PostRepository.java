@@ -29,6 +29,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	@Query(value = "select * from post p where p.id in (select r.post_id from post_reported_by r)", nativeQuery = true)
 	Set<Post> findAllReported();
 	
+	@Query(value = "select * from post p where p.id in (select t.post_id from post_tagged_user t where t.user_id = ?1)", nativeQuery = true)
+	Set<Post> findAllTagged(Long userId);
+
 	@Query(value = "select * from post p where p.id in (select s.post_id from post_tagged_user s where s.user_id = ?1)", nativeQuery = true)
 	List<Post> getAllTaggedByUser(Long userId);
 	

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import uns.ac.rs.postservice.domain.Authority;
 import uns.ac.rs.postservice.domain.Post;
 import uns.ac.rs.postservice.domain.User;
 import uns.ac.rs.postservice.domain.UserType;
+import uns.ac.rs.postservice.kafka.Producer;
 import uns.ac.rs.postservice.repository.AuthorityRepository;
 import uns.ac.rs.postservice.repository.PostRepository;
 import uns.ac.rs.postservice.repository.UserRepository;
@@ -32,8 +37,11 @@ public class UserService implements UserDetailsService{
 	private AuthorityRepository authorityRepository;
 	
 	@Autowired
+	private Producer producer;
+
+	@Autowired
 	private PostRepository postRepository;
-	
+
 	public User saveRegisteredUser(User user) throws InvalidDataException {
 		System.out.println(user);
 		
@@ -146,6 +154,33 @@ public class UserService implements UserDetailsService{
 //			if (containsName(user.getAuthorities(), UserType.ROLE_REGISTERED_USER) || containsName(user.getAuthorities(), UserType.ROLE_AGENT)) {
 //				usernames.add(user.getUsername());
 //			}
+		}
+		return usernames;
+	}
+	
+	public List<String> getAllUsersForSearch() throws InvalidDataException, JsonMappingException, JsonProcessingException, InterruptedException, ExecutionException{
+		List<User> users = userRepository.findByIsPrivateFalse();
+		List<String> usernames = new ArrayList<String>();
+		for (User user : users) {
+			System.out.println(user.getUsername());
+			usernames.add(user.getUsername());
+//			if (containsName(user.getAuthorities(), UserType.ROLE_REGISTERED_USER) || containsName(user.getAuthorities(), UserType.ROLE_AGENT)) {
+//				usernames.add(user.getUsername());
+//			}
+		}
+		String loggedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+		System.out.println(loggedUsername);
+		if(!loggedUsername.equals("anonymousUser")) {
+			List<User> followingUsers = producer.getFollowing(loggedUsername);
+			for(User u : followingUsers) {
+				if(!usernames.contains(u.getUsername())) {
+					usernames.add(u.getUsername());
+				}
+			}
+			
+			if(usernames.contains(loggedUsername)) {
+				usernames.remove(loggedUsername);
+			}
 		}
 		return usernames;
 	}
