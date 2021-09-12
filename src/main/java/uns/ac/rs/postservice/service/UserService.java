@@ -171,20 +171,18 @@ public class UserService implements UserDetailsService{
 				}
 			}
 		}
+		if(!usernames.contains(loggedUsername)) {
+			usernames.add(loggedUsername);
+		}
 		return usernames;
 	}
 	
 	public List<String> getAllUsersForSearch() throws InvalidDataException, JsonMappingException, JsonProcessingException, InterruptedException, ExecutionException{
-		List<User> users = userRepository.findAllRegisteredUsers();
 		List<String> usernames = new ArrayList<String>();
 		String loggedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-		for (User user : users) {
-			System.out.println(user.getUsername());
-			usernames.add(user.getUsername());
-		}
 		if(!loggedUsername.equals("anonymousUser")) {
-			List<User> privateUsers = userRepository.findByIsPrivateTrue();
-			for (User user : privateUsers) {
+			List<User> users = userRepository.findAllRegisteredUsers();
+			for (User user : users) {
 				System.out.println(user.getUsername());
 				usernames.add(user.getUsername());
 			}
@@ -196,8 +194,14 @@ public class UserService implements UserDetailsService{
 				}
 			}
 			
-			if(usernames.contains(loggedUsername)) {
-				usernames.remove(loggedUsername);
+			if(!usernames.contains(loggedUsername)) {
+				usernames.add(loggedUsername);
+			}
+		}else {
+			List<User> users = userRepository.findByIsPrivateFalse();
+			for (User user : users) {
+				System.out.println(user.getUsername());
+				usernames.add(user.getUsername());
 			}
 		}
 		return usernames;

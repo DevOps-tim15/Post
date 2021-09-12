@@ -20,6 +20,7 @@ import uns.ac.rs.postservice.dto.CommentDTO;
 import uns.ac.rs.postservice.dto.PostDTO;
 import uns.ac.rs.postservice.dto.SearchDTO;
 import uns.ac.rs.postservice.kafka.Producer;
+import uns.ac.rs.postservice.kafka.domain.UsersFollowBlockMute;
 import uns.ac.rs.postservice.mapper.PostMapper;
 import uns.ac.rs.postservice.mapper.SearchMapper;
 import uns.ac.rs.postservice.repository.CommentRepository;
@@ -85,10 +86,15 @@ public class PostService {
 			throw new InvalidDataException("Invalid user.");
 		}
 		
-		List<User> followingUsers = producer.getFollowing(username);
+		UsersFollowBlockMute users = producer.getFollowBlockMute(username);
 		List<Long> ids = new ArrayList<Long>();
-		for (User u : followingUsers) {
+		for (User u : users.getFollowing()) {
 			ids.add(u.getId());
+		}
+		for (User u: users.getBlock()) {
+			if(ids.contains(u.getId())) {
+				ids.remove(u.getId());
+			}
 		}
 		if (user.getIsPrivate()) {
 			ids.add(user.getId());
@@ -241,18 +247,39 @@ public class PostService {
 		}
 		String loggedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 		Boolean following = false;
+		Boolean isOwner = false;
 		if(!loggedUsername.contentEquals("anonymousUser")) {
-			List<User> followingUsers = producer.getFollowing(loggedUsername);
-			for(User u : followingUsers) {
-				if(u.getUsername().equals(username)) {
-					following = true;
-					break;
+			if(username.equals(loggedUsername)) {
+				isOwner = true;	
+			}
+			else {
+				UsersFollowBlockMute userFBM = producer.getFollowBlockMute(loggedUsername);
+				System.out.println(userFBM.getBlock());
+				for(User u: userFBM.getBlock()) {
+					System.out.println(u.getUsername());
+					if(u.getUsername().equals(username)) {
+						return null;
+					}
 				}
+				for(User u : userFBM.getFollowing()) {
+					if(u.getUsername().equals(username)) {
+						following = true;
+						break;
+					}
+				}
+			}
+			
+			if((!isOwner) && (!following) && (user.getIsPrivate())) {
+				return null;
+			}
+		}else {
+			if(user.getIsPrivate()) {
+				return null;
 			}
 		}
 		List<PostDTO> userPosts = this.getAllByUser(username);
 		List<PostDTO> taggedPosts = this.getAllTagged(username);
-		SearchDTO dto = SearchMapper.fromEntity(user, following, userPosts, taggedPosts);
+		SearchDTO dto = SearchMapper.fromEntity(user, following,  isOwner, userPosts, taggedPosts);
 		return dto;
 	}
 	
