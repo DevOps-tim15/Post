@@ -1,6 +1,7 @@
 package uns.ac.rs.postservice.service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -87,20 +88,44 @@ public class PostService {
 		}
 		
 		UsersFollowBlockMute users = producer.getFollowBlockMute(username);
+		ArrayList<String> mutedUsers = new ArrayList<>();
+		ArrayList<String> blockedUsers = new ArrayList<>();
 		List<Long> ids = new ArrayList<Long>();
+
 		for (User u : users.getFollowing()) {
 			ids.add(u.getId());
+			
 		}
+
+		if (user.getIsPrivate()) {
+			ids.add(user.getId());
+		}
+		
 		for (User u: users.getBlock()) {
+			blockedUsers.add(u.getUsername());
 			if(ids.contains(u.getId())) {
 				ids.remove(u.getId());
 			}
 		}
-		if (user.getIsPrivate()) {
-			ids.add(user.getId());
+		for (User u: users.getMute()) {
+			mutedUsers.add(u.getUsername());
+			if(ids.contains(u.getId())) {
+				ids.remove(u.getId());
+			}
 		}
-		List<Post> posts = postRepository.findAllByFollowingUsers(ids);
+
 		
+		List<Post> posts = postRepository.findAllByFollowingUsers(ids);
+	    Iterator<Post> itr = posts.iterator();
+
+	    while (itr.hasNext()) {
+	    	Post p = itr.next();
+			if(mutedUsers.contains(p.getUser().getUsername())){
+				itr.remove();
+			}else if(blockedUsers.contains(p.getUser().getUsername())){
+				itr.remove();
+			}
+		}
 		
 		return PostMapper.fromEntityList(posts, user);
 	}
@@ -248,6 +273,7 @@ public class PostService {
 		String loggedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 		Boolean following = false;
 		Boolean isOwner = false;
+		Boolean isMuted = false;
 		if(!loggedUsername.contentEquals("anonymousUser")) {
 			if(username.equals(loggedUsername)) {
 				isOwner = true;	
@@ -267,10 +293,13 @@ public class PostService {
 						break;
 					}
 				}
-			}
-			
-			if((!isOwner) && (!following) && (user.getIsPrivate())) {
-				return null;
+				
+				for(User u : userFBM.getMute()) {
+					if(u.getUsername().equals(username)) {
+						isMuted = true;
+						break;
+					}
+				}
 			}
 		}else {
 			if(user.getIsPrivate()) {
@@ -279,7 +308,7 @@ public class PostService {
 		}
 		List<PostDTO> userPosts = this.getAllByUser(username);
 		List<PostDTO> taggedPosts = this.getAllTagged(username);
-		SearchDTO dto = SearchMapper.fromEntity(user, following,  isOwner, userPosts, taggedPosts);
+		SearchDTO dto = SearchMapper.fromEntity(user, following,  isOwner, isMuted, userPosts, taggedPosts);
 		return dto;
 	}
 	

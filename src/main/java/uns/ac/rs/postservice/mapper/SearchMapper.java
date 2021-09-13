@@ -10,9 +10,9 @@ import uns.ac.rs.postservice.dto.UserSearchDTO;
 public class SearchMapper {
 	
 	
-	public static SearchDTO fromEntity(User user, Boolean isFollowing, Boolean isOwner, List<PostDTO> userPosts, List<PostDTO> taggedPosts) {
+	public static SearchDTO fromEntity(User user, Boolean isFollowing, Boolean isOwner, Boolean isMuted, List<PostDTO> userPosts, List<PostDTO> taggedPosts) {
 		SearchDTO dto = new SearchDTO();
-		dto.setUser(new UserSearchDTO(user.getUsername(), user.getFirstName(), user.getLastName(), user.getWebsiteUrl(), user.getSex(), user.getBirthDate(), user.getBiography(), isFollowing, user.getIsPrivate(), isOwner));
+		dto.setUser(new UserSearchDTO(user.getUsername(), user.getFirstName(), user.getLastName(), user.getWebsiteUrl(), user.getSex(), user.getBirthDate(), user.getBiography(), isFollowing, user.getIsPrivate(), isOwner, isMuted));
 		if (!isFollowing && user.getIsPrivate()) {
 			return dto;
 		}
