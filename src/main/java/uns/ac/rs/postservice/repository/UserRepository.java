@@ -11,7 +11,11 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	User findByEmail(String email);
 	User findByUsername(String username);
 	List<User> findByCanBeTaggedTrue();
+	List<User> findByCanBeTaggedTrueAndIsPrivateFalse();
+	List<User> findByCanBeTaggedTrueAndIsPrivateTrue();
+
 	List<User> findByIsPrivateFalse();
+	List<User> findByIsPrivateTrue();
 	
 	@Query(value = "select * from user_t u where u.id in (select ua.user_id from user_authority ua where ua.authority_id = 1 "
 			+ "or ua.authority_id = 2)", nativeQuery = true)

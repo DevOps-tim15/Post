@@ -321,5 +321,14 @@ public class User implements UserDetails{
 	public boolean isEnabled() {
 		return true;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", phone=" + phone + ", verified=" + verified
+				+ ", websiteUrl=" + websiteUrl + ", sex=" + sex + ", birthDate=" + birthDate + ", biography="
+				+ biography + ", canBeTagged=" + canBeTagged + ", isPrivate=" + isPrivate + ", authorities="
+				+ authorities + ", posts=" + posts + ", likedPosts=" + likedPosts + ", dislikedPosts=" + dislikedPosts
+				+ ", savedPosts=" + savedPosts + ", reportedPosts=" + reportedPosts + "]";
+	}
 }

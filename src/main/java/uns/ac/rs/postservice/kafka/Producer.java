@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uns.ac.rs.postservice.domain.User;
+import uns.ac.rs.postservice.kafka.domain.UsersFollowBlockMute;
 import uns.ac.rs.postservice.kafka.domain.UsersMessage;
 
 @Service
@@ -45,5 +46,16 @@ public class Producer {
 	        System.out.println(result);
 	        UsersMessage usersMessage = objectMapper.readValue(result, UsersMessage.class);
 	        return usersMessage.getUsers();
+	   }
+	  
+	  public UsersFollowBlockMute getFollowBlockMute(String username) throws JsonMappingException, JsonProcessingException, InterruptedException, ExecutionException{
+	     	System.out.println("HI blocked!");   
+	     	ProducerRecord<String, String> producerRecord = new ProducerRecord<>("follow-block-mute", username);
+	        RequestReplyFuture<String, String, String> future = replyingKafkaTemplate.sendAndReceive(producerRecord);
+	        ConsumerRecord<String, String> consumerRecord = future.get();
+	        String result = consumerRecord.value();
+	        System.out.println(result);
+	        UsersFollowBlockMute usersMessage = objectMapper.readValue(result, UsersFollowBlockMute.class);
+	        return usersMessage;
 	   }
 }
