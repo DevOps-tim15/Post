@@ -12,12 +12,13 @@ public class UserSearchDTO {
 	private Boolean isFollowing;
 	private Boolean isPrivate;
 	private Boolean isOwner;
+	private Boolean isMuted;
 	
 	public UserSearchDTO() {
 		super();
 	}
 	public UserSearchDTO(String username, String firstName, String lastName, String websiteUrl, String sex,
-			String birthDate, String biography, Boolean isFollowing, Boolean isPrivate, Boolean isOwner) {
+			String birthDate, String biography, Boolean isFollowing, Boolean isPrivate, Boolean isOwner, Boolean isMuted) {
 		super();
 		this.username = username;
 		this.firstName = firstName;
@@ -29,6 +30,7 @@ public class UserSearchDTO {
 		this.isFollowing = isFollowing;
 		this.isPrivate = isPrivate;
 		this.isOwner = isOwner;
+		this.isMuted = isMuted;
 	}
 	public String getUsername() {
 		return username;
@@ -89,5 +91,11 @@ public class UserSearchDTO {
 	}
 	public void setIsOwner(Boolean isOwner) {
 		this.isOwner = isOwner;
+	}
+	public Boolean getIsMuted() {
+		return isMuted;
+	}
+	public void setIsMuted(Boolean isMuted) {
+		this.isMuted = isMuted;
 	}
 }
