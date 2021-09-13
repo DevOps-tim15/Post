@@ -274,6 +274,7 @@ public class PostService {
 		Boolean following = false;
 		Boolean isOwner = false;
 		Boolean isMuted = false;
+		Boolean isRequested = false;
 		if(!loggedUsername.contentEquals("anonymousUser")) {
 			if(username.equals(loggedUsername)) {
 				isOwner = true;	
@@ -300,6 +301,13 @@ public class PostService {
 						break;
 					}
 				}
+				List<User> followingRequests = producer.getRequested(username);
+				for (User u : followingRequests) {
+					if(u.getUsername().equals(loggedUsername)) {
+						isRequested = true;
+						break;
+					}
+				}
 			}
 		}else {
 			if(user.getIsPrivate()) {
@@ -308,7 +316,7 @@ public class PostService {
 		}
 		List<PostDTO> userPosts = this.getAllByUser(username);
 		List<PostDTO> taggedPosts = this.getAllTagged(username);
-		SearchDTO dto = SearchMapper.fromEntity(user, following,  isOwner, isMuted, userPosts, taggedPosts);
+		SearchDTO dto = SearchMapper.fromEntity(user, following,  isOwner, isMuted, isRequested, userPosts, taggedPosts);
 		return dto;
 	}
 	

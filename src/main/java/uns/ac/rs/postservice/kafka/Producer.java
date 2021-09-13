@@ -58,4 +58,16 @@ public class Producer {
 	        UsersFollowBlockMute usersMessage = objectMapper.readValue(result, UsersFollowBlockMute.class);
 	        return usersMessage;
 	   }
+	  
+	  public List<User> getRequested(String username) throws JsonMappingException, JsonProcessingException, InterruptedException, ExecutionException{
+	     	System.out.println("HI!");   
+	     	ProducerRecord<String, String> producerRecord = new ProducerRecord<>("requested", username);
+	        RequestReplyFuture<String, String, String> future = replyingKafkaTemplate.sendAndReceive(producerRecord);
+	        ConsumerRecord<String, String> consumerRecord = future.get();
+	        String result = consumerRecord.value();
+	        System.out.println(result);
+	        UsersMessage usersMessage = objectMapper.readValue(result, UsersMessage.class);
+	        return usersMessage.getUsers();
+	   }
+	  
 }
