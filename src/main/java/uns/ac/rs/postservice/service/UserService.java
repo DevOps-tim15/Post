@@ -1,6 +1,7 @@
 package uns.ac.rs.postservice.service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -173,6 +174,13 @@ public class UserService implements UserDetailsService{
 		}
 		if(!usernames.contains(loggedUsername)) {
 			usernames.add(loggedUsername);
+		}
+	    Iterator<String> itr = usernames.iterator();
+	    while (itr.hasNext()) {
+	    	String itrusername = itr.next();
+			if(this.findByUsername(itrusername).getCanBeTagged() == false){
+				itr.remove();
+			}
 		}
 		return usernames;
 	}
