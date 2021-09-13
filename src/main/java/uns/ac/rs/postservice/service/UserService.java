@@ -192,7 +192,7 @@ public class UserService implements UserDetailsService{
 			List<User> users = userRepository.findAllRegisteredUsers();
 			for (User user : users) {
 				System.out.println(user.getUsername());
-				usernames.add(user.getUsername());
+				usernames.add(user.getUsername());	
 			}
 			UsersFollowBlockMute usersFBM = producer.getFollowBlockMute(loggedUsername);
 
