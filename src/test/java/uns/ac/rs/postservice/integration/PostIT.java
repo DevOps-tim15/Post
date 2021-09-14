@@ -2,6 +2,7 @@ package uns.ac.rs.postservice.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uns.ac.rs.postservice.domain.Post;
 import uns.ac.rs.postservice.dto.CommentDTO;
 import uns.ac.rs.postservice.dto.PostDTO;
+import uns.ac.rs.postservice.dto.SearchDTO;
+import uns.ac.rs.postservice.kafka.domain.UsersFollowBlockMute;
 import uns.ac.rs.postservice.repository.PostRepository;
 import uns.ac.rs.postservice.service.PostService;
 import uns.ac.rs.postservice.util.InvalidDataException;
@@ -122,5 +125,14 @@ public class PostIT {
 	public void removeInappropriatePost_wrongId() throws Exception {
 		Long postId = 10L;
 		postService.removePost(postId);
+	}
+	
+	@Test
+	@Transactional
+	@Order(9)
+	public void search_successfully() throws Exception {
+		String usernameToSearch = "unknown";
+		SearchDTO search= postService.search(usernameToSearch);
+		assertNull(search);
 	}
 }
