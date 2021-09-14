@@ -69,5 +69,4 @@ public class Producer {
 	        UsersMessage usersMessage = objectMapper.readValue(result, UsersMessage.class);
 	        return usersMessage.getUsers();
 	   }
-	  
 }

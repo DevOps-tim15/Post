@@ -16,7 +16,6 @@ import uns.ac.rs.postservice.kafka.domain.UserMessage;
 import uns.ac.rs.postservice.service.UserService;
 import uns.ac.rs.postservice.util.InvalidDataException;
 
-
 @Service
 public class Consumer {
 	

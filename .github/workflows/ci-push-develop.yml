@@ -15,7 +15,11 @@ jobs:
           uses: mathieudutour/github-tag-action@v5.5
           with:
             append_to_pre_release_tag: "dev"
+<<<<<<< HEAD
             default_bump: patch
+=======
+            default_bump: minor
+>>>>>>> main
             github_token: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Create a GitHub prerelease

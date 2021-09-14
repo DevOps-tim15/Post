@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-
 import uns.ac.rs.postservice.domain.Comment;
 import uns.ac.rs.postservice.domain.Post;
 import uns.ac.rs.postservice.domain.User;
@@ -129,7 +128,7 @@ public class PostService {
 		
 		return PostMapper.fromEntityList(posts, user);
 	}
-
+	
 	public PostDTO likePost(Long postId, String username) throws InvalidDataException{
 		Optional<Post> getPost = postRepository.findById(postId);
 		if (!getPost.isPresent()) {

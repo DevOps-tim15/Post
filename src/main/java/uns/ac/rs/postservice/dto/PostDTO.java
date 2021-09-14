@@ -34,6 +34,7 @@ public class PostDTO {
 	
 	public PostDTO(Long postId, String username, String description, String image, List<String> taggedUsers, Long likes, Long dislikes, 
 			Boolean canBeLiked, Boolean canBeDisliked, Boolean canBeSaved, Boolean canBeReported, List<CommentDTO> comments, List<String> reportedBy) {
+
 		super();
 		this.postId = postId;
 		this.username = username;

@@ -15,6 +15,7 @@ public class PostMapper {
 		postDTO.setLikes((long) post.getLikedBy().size());
 		postDTO.setDislikes((long) post.getDislikedBy().size());
 		postDTO.setComments(CommentMapper.fromEntityList(post.getComments()));
+		
 		if (user.getLikedPosts().stream().anyMatch(el -> el.getId() == post.getId())) {
 			postDTO.setCanBeLiked(false);
 		} else {
@@ -40,6 +41,7 @@ public class PostMapper {
 		}
 		return postDTO;
 	}
+	
 	public static List<PostDTO> fromEntityListNoUser(List<Post> posts) {
 		List<PostDTO> postsDTO = new ArrayList<>();
 		for (Post post : posts) {

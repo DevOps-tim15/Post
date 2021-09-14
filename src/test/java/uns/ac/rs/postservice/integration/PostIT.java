@@ -22,7 +22,6 @@ import uns.ac.rs.postservice.domain.Post;
 import uns.ac.rs.postservice.dto.CommentDTO;
 import uns.ac.rs.postservice.dto.PostDTO;
 import uns.ac.rs.postservice.dto.SearchDTO;
-import uns.ac.rs.postservice.kafka.domain.UsersFollowBlockMute;
 import uns.ac.rs.postservice.repository.PostRepository;
 import uns.ac.rs.postservice.service.PostService;
 import uns.ac.rs.postservice.util.InvalidDataException;
@@ -39,7 +38,7 @@ public class PostIT {
 	
 	@Autowired
 	private PostRepository postRepository;
-	
+
 	@Test
 	@Transactional
 	@Order(1)
