@@ -84,6 +84,14 @@ public class User implements UserDetails{
 	@JsonIgnoreProperties(value= {"dislikedBy"})
 	private List<Post> dislikedPosts;
 	
+	@ManyToMany(mappedBy = "savedBy")
+	@JsonIgnoreProperties(value= {"savedBy"})
+	private List<Post> savedPosts;
+
+	@ManyToMany(mappedBy = "reportedBy")
+	@JsonIgnoreProperties(value= {"reportedBy"})
+	private List<Post> reportedPosts;
+	
 	public User() {
 		super();
 	}
@@ -111,7 +119,7 @@ public class User implements UserDetails{
 	public User(Long id, String username, String password, String email, String firstName, String lastName,
 			String phone, boolean verified, String websiteUrl, String sex, String birthDate, String biography,
 			Boolean canBeTagged, Boolean isPrivate, List<Authority> authorities, List<Post> posts,
-			List<Post> likedPosts, List<Post> dislikedPosts) {
+			List<Post> likedPosts, List<Post> dislikedPosts, List<Post> savedPosts, List<Post> reportedPosts) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -131,6 +139,8 @@ public class User implements UserDetails{
 		this.posts = posts;
 		this.likedPosts = likedPosts;
 		this.dislikedPosts = dislikedPosts;
+		this.savedPosts = savedPosts;
+		this.reportedPosts = reportedPosts;
 	}
 
 	public Long getId() {
@@ -276,6 +286,21 @@ public class User implements UserDetails{
 	public void setDislikedPosts(List<Post> dislikedPosts) {
 		this.dislikedPosts = dislikedPosts;
 	}
+	
+	public List<Post> getSavedPosts() {
+		return savedPosts;
+	}
+
+	public void setSavedPosts(List<Post> savedPosts) {
+		this.savedPosts = savedPosts;
+	}
+	public List<Post> getReportedPosts() {
+		return reportedPosts;
+	}
+
+	public void setReportedPosts(List<Post> reportedPosts) {
+		this.reportedPosts = reportedPosts;
+	}
 
 	@Override
 	public boolean isAccountNonExpired() {
@@ -296,5 +321,14 @@ public class User implements UserDetails{
 	public boolean isEnabled() {
 		return true;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", phone=" + phone + ", verified=" + verified
+				+ ", websiteUrl=" + websiteUrl + ", sex=" + sex + ", birthDate=" + birthDate + ", biography="
+				+ biography + ", canBeTagged=" + canBeTagged + ", isPrivate=" + isPrivate + ", authorities="
+				+ authorities + ", posts=" + posts + ", likedPosts=" + likedPosts + ", dislikedPosts=" + dislikedPosts
+				+ ", savedPosts=" + savedPosts + ", reportedPosts=" + reportedPosts + "]";
+	}
 }

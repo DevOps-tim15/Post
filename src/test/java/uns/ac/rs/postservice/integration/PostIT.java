@@ -2,6 +2,7 @@ package uns.ac.rs.postservice.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uns.ac.rs.postservice.domain.Post;
+import uns.ac.rs.postservice.dto.CommentDTO;
 import uns.ac.rs.postservice.dto.PostDTO;
+import uns.ac.rs.postservice.dto.SearchDTO;
+import uns.ac.rs.postservice.repository.PostRepository;
 import uns.ac.rs.postservice.service.PostService;
 import uns.ac.rs.postservice.util.InvalidDataException;
 
@@ -31,6 +36,9 @@ public class PostIT {
 	@Autowired
 	private PostService postService;
 	
+	@Autowired
+	private PostRepository postRepository;
+
 	@Test
 	@Transactional
 	@Order(1)
@@ -76,5 +84,54 @@ public class PostIT {
 		String username = "marko";
 		postService.likePost(postId, username);
 	}
-
+	
+	@Test
+	@Transactional
+	@Order(5)
+	public void likedDislikedPosts_size() throws Exception {
+		String username1 = "jova";
+		String username2 = "marko";
+		List<PostDTO> postsDTO = postService.allLikedAndDislikedPosts(username1);
+		List<PostDTO> postsDTO2 = postService.allLikedAndDislikedPosts(username2);
+		assertEquals(1, postsDTO.size());
+		assertEquals(0, postsDTO2.size());
+	}
+	
+	@Test
+	@Transactional
+	@Order(6)
+	public void comments_size() throws Exception {
+		String username = "marko";
+		CommentDTO commDTO = new CommentDTO(1L, username, "text");
+		PostDTO postDTO = postService.commentPost(commDTO, username);
+		assertEquals(1, postDTO.getComments().size());
+	}
+	
+	@Test
+	@Transactional
+	@Order(7)
+	public void removeInappropriatePost_successfully() throws Exception {
+		Long postId = 1L;
+		Long id= postService.removePost(postId);
+		assertEquals(postId, id);
+		List<Post> posts = postRepository.findAll();
+		assertEquals(0, posts.size());
+	}
+	
+	@Test(expected = InvalidDataException.class)
+	@Transactional
+	@Order(8)
+	public void removeInappropriatePost_wrongId() throws Exception {
+		Long postId = 10L;
+		postService.removePost(postId);
+	}
+	
+	@Test
+	@Transactional
+	@Order(9)
+	public void search_successfully() throws Exception {
+		String usernameToSearch = "unknown";
+		SearchDTO search= postService.search(usernameToSearch);
+		assertNull(search);
+	}
 }

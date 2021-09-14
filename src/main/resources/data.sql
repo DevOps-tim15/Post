@@ -87,5 +87,3 @@ INSERT INTO user_authority (user_id, authority_id) VALUES (1, 1), (2,1);
 INSERT INTO verification_tokens (`token`, `user_id`) VALUES ('joca-token', 1), ('marko-token',2);
 INSERT INTO `post`(`decscription`, `picture`, `user_id`) VALUES ('description', RAWTOHEX('Test'), '1');
 INSERT INTO `post_liked_by` (`post_id`,`user_id`) VALUES ('1', '1');
-
-

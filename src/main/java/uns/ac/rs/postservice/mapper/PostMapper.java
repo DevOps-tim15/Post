@@ -14,6 +14,8 @@ public class PostMapper {
 		PostDTO postDTO = new PostDTO(post.getId(), post.getUser().getUsername(), post.getDescription(), new String(post.getPicture(),  StandardCharsets.UTF_8), UserMapper.fromEntityToString(post.getTaggedUsers()));
 		postDTO.setLikes((long) post.getLikedBy().size());
 		postDTO.setDislikes((long) post.getDislikedBy().size());
+		postDTO.setComments(CommentMapper.fromEntityList(post.getComments()));
+		
 		if (user.getLikedPosts().stream().anyMatch(el -> el.getId() == post.getId())) {
 			postDTO.setCanBeLiked(false);
 		} else {
@@ -25,16 +27,33 @@ public class PostMapper {
 		} else {
 			postDTO.setCanBeDisliked(true);
 		}
+		
+		if (user.getSavedPosts().stream().anyMatch(el -> el.getId() == post.getId())) {
+			postDTO.setCanBeSaved(false);
+		} else {
+			postDTO.setCanBeSaved(true);
+		}
+		
+		if (user.getReportedPosts().stream().anyMatch(el -> el.getId() == post.getId())) {
+			postDTO.setCanBeReported(false);
+		} else {
+			postDTO.setCanBeReported(true);
+		}
 		return postDTO;
 	}
+	
 	public static List<PostDTO> fromEntityListNoUser(List<Post> posts) {
 		List<PostDTO> postsDTO = new ArrayList<>();
 		for (Post post : posts) {
 			PostDTO postDTO = new PostDTO(post.getId(), post.getUser().getUsername(), post.getDescription(), new String(post.getPicture(),  StandardCharsets.UTF_8), UserMapper.fromEntityToString(post.getTaggedUsers()));
+			postDTO.setComments(CommentMapper.fromEntityList(post.getComments()));
+			postDTO.setReportedBy(UserMapper.fromEntityToString(post.getReportedBy()));
 			postDTO.setLikes((long) post.getLikedBy().size());
 			postDTO.setDislikes((long) post.getDislikedBy().size());
 			postDTO.setCanBeLiked(false);
 			postDTO.setCanBeDisliked(false);
+			postDTO.setCanBeSaved(false);
+			postDTO.setCanBeReported(false);
 			postsDTO.add(postDTO);
 		}
 		
@@ -47,7 +66,6 @@ public class PostMapper {
 		post.setDescription(postDTO.getDescription());
 		post.setPicture(postDTO.getImage().getBytes(StandardCharsets.UTF_8));
 		post.setTaggedUsers(new ArrayList<User>());
-//		post.setTaggedUsers(UserMapper.toEntityList(postDTO.getTaggedUsers()));
 		return post;
 	}
 	

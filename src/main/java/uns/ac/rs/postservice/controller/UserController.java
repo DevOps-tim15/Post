@@ -25,6 +25,19 @@ public class UserController {
 			return new ResponseEntity<>(userService.getAllUsersForTagging(), HttpStatus.OK);
 		} catch (InvalidDataException e) {
 			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@GetMapping(value = "/forSearch")
+	public ResponseEntity<?> getAllUsersForSearch() {
+		try {
+			return new ResponseEntity<>(userService.getAllUsersForSearch(), HttpStatus.OK);
+		} catch (InvalidDataException e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 }

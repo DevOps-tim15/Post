@@ -1,8 +1,10 @@
 package uns.ac.rs.postservice.service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +13,17 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-
+import uns.ac.rs.postservice.domain.Comment;
 import uns.ac.rs.postservice.domain.Post;
 import uns.ac.rs.postservice.domain.User;
+import uns.ac.rs.postservice.dto.CommentDTO;
 import uns.ac.rs.postservice.dto.PostDTO;
+import uns.ac.rs.postservice.dto.SearchDTO;
 import uns.ac.rs.postservice.kafka.Producer;
+import uns.ac.rs.postservice.kafka.domain.UsersFollowBlockMute;
 import uns.ac.rs.postservice.mapper.PostMapper;
+import uns.ac.rs.postservice.mapper.SearchMapper;
+import uns.ac.rs.postservice.repository.CommentRepository;
 import uns.ac.rs.postservice.repository.PostRepository;
 import uns.ac.rs.postservice.repository.UserRepository;
 import uns.ac.rs.postservice.util.InvalidDataException;
@@ -29,6 +36,9 @@ public class PostService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private CommentRepository commentRepository;
 	
 	@Autowired
 	private Producer producer;
@@ -76,20 +86,49 @@ public class PostService {
 			throw new InvalidDataException("Invalid user.");
 		}
 		
-		List<User> followingUsers = producer.getFollowing(username);
+		UsersFollowBlockMute users = producer.getFollowBlockMute(username);
+		ArrayList<String> mutedUsers = new ArrayList<>();
+		ArrayList<String> blockedUsers = new ArrayList<>();
 		List<Long> ids = new ArrayList<Long>();
-		for (User u : followingUsers) {
+
+		for (User u : users.getFollowing()) {
 			ids.add(u.getId());
+			
 		}
+
 		if (user.getIsPrivate()) {
 			ids.add(user.getId());
 		}
-		List<Post> posts = postRepository.findAllByFollowingUsers(ids);
 		
+		for (User u: users.getBlock()) {
+			blockedUsers.add(u.getUsername());
+			if(ids.contains(u.getId())) {
+				ids.remove(u.getId());
+			}
+		}
+		for (User u: users.getMute()) {
+			mutedUsers.add(u.getUsername());
+			if(ids.contains(u.getId())) {
+				ids.remove(u.getId());
+			}
+		}
+
+		
+		List<Post> posts = postRepository.findAllByFollowingUsers(ids);
+	    Iterator<Post> itr = posts.iterator();
+
+	    while (itr.hasNext()) {
+	    	Post p = itr.next();
+			if(mutedUsers.contains(p.getUser().getUsername())){
+				itr.remove();
+			}else if(blockedUsers.contains(p.getUser().getUsername())){
+				itr.remove();
+			}
+		}
 		
 		return PostMapper.fromEntityList(posts, user);
 	}
-
+	
 	public PostDTO likePost(Long postId, String username) throws InvalidDataException{
 		Optional<Post> getPost = postRepository.findById(postId);
 		if (!getPost.isPresent()) {
@@ -120,4 +159,179 @@ public class PostService {
 		return PostMapper.fromEntity(post, user);
 	}
 
+	public List<PostDTO> allLikedAndDislikedPosts(String username) throws InvalidDataException {
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		List<Post> posts = postRepository.findAllLikedOrDisliked(user.getId());
+		return PostMapper.fromEntityList(posts, user);
+	}
+
+	public PostDTO undoLikePost(Long postId, String username) throws InvalidDataException{
+		Optional<Post> getPost = postRepository.findById(postId);
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Post does not exist");
+		}
+		Post post = getPost.get();
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		post.getLikedBy().remove(user);
+		postRepository.save(post);
+		
+		return PostMapper.fromEntity(post, user);
+	}
+	
+	public PostDTO undoDislikePost(Long postId, String username) throws InvalidDataException{
+		Optional<Post> getPost = postRepository.findById(postId);
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Post does not exist");
+		}
+		Post post = getPost.get();
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		post.getDislikedBy().remove(user);
+		postRepository.save(post);
+		
+		return PostMapper.fromEntity(post, user);
+	}
+
+	public PostDTO savePost(Long postId, String username) throws InvalidDataException {
+		Optional<Post> getPost = postRepository.findById(postId);
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Post does not exist");
+		}
+		Post post = getPost.get();
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		post.getSavedBy().add(user);
+		postRepository.save(post);
+		
+		return PostMapper.fromEntity(post, user);
+	}
+
+	public List<PostDTO> savedPosts(String username) throws InvalidDataException {
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		List<Post> posts = postRepository.findAllSaved(user.getId());
+		return PostMapper.fromEntityList(posts, user);
+	}
+	public PostDTO reportPost(Long postId, String username) throws InvalidDataException {
+		Optional<Post> getPost = postRepository.findById(postId);
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Post does not exist");
+		}
+		Post post = getPost.get();
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		post.getReportedBy().add(user);
+		postRepository.save(post);
+		
+		return PostMapper.fromEntity(post, user);
+	}
+
+	public PostDTO commentPost(CommentDTO commentDTO, String username) throws InvalidDataException {
+		Optional<Post> getPost = postRepository.findById(commentDTO.getPostId());
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Post does not exist");
+		}
+		Post post = getPost.get();
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new InvalidDataException("Invalid user.");
+		}
+		
+		Comment comment = new Comment();
+		comment.setPost(post);
+		comment.setText(commentDTO.getText());
+		comment.setUser(user);
+		commentRepository.save(comment);
+		return PostMapper.fromEntity(post, user);
+	}
+
+	public List<PostDTO> reportedPosts() throws InvalidDataException{
+		Set<Post> posts = postRepository.findAllReported();
+		return PostMapper.fromEntityListNoUser(new ArrayList<>(posts));
+	}
+	
+	public SearchDTO search(String username) throws InvalidDataException, JsonMappingException, JsonProcessingException, InterruptedException, ExecutionException {
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			return null;
+		}
+		String loggedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+		Boolean following = false;
+		Boolean isOwner = false;
+		Boolean isMuted = false;
+		Boolean isRequested = false;
+		if(!loggedUsername.contentEquals("anonymousUser")) {
+			if(username.equals(loggedUsername)) {
+				isOwner = true;	
+			}
+			else {
+				UsersFollowBlockMute userFBM = producer.getFollowBlockMute(loggedUsername);
+				System.out.println(userFBM.getBlock());
+				for(User u: userFBM.getBlock()) {
+					System.out.println(u.getUsername());
+					if(u.getUsername().equals(username)) {
+						return null;
+					}
+				}
+				for(User u : userFBM.getFollowing()) {
+					if(u.getUsername().equals(username)) {
+						following = true;
+						break;
+					}
+				}
+				
+				for(User u : userFBM.getMute()) {
+					if(u.getUsername().equals(username)) {
+						isMuted = true;
+						break;
+					}
+				}
+				List<User> followingRequests = producer.getRequested(username);
+				for (User u : followingRequests) {
+					if(u.getUsername().equals(loggedUsername)) {
+						isRequested = true;
+						break;
+					}
+				}
+			}
+		}else {
+			if(user.getIsPrivate()) {
+				return null;
+			}
+		}
+		List<PostDTO> userPosts = this.getAllByUser(username);
+		List<PostDTO> taggedPosts = this.getAllTagged(username);
+		SearchDTO dto = SearchMapper.fromEntity(user, following,  isOwner, isMuted, isRequested, userPosts, taggedPosts);
+		return dto;
+	}
+	
+	public List<PostDTO> getAllTagged(String username) {
+		User user = userRepository.findByUsername(username);
+		Set<Post> posts = postRepository.findAllTagged(user.getId());
+		return PostMapper.fromEntityListNoUser(new ArrayList<>(posts));
+	}
+
+	public Long removePost(Long postId) throws InvalidDataException{
+		Optional<Post> getPost = postRepository.findById(postId);
+		if (!getPost.isPresent()) {
+			throw new InvalidDataException("Wrong post id!");
+		}
+		Post post = getPost.get();
+		postRepository.delete(post);
+		return postId;
+	}
 }
