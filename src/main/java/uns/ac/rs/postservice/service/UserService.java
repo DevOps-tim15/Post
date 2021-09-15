@@ -177,7 +177,8 @@ public class UserService implements UserDetailsService{
 	    Iterator<String> itr = usernames.iterator();
 	    while (itr.hasNext()) {
 	    	String itrusername = itr.next();
-			if(this.findByUsername(itrusername).getCanBeTagged() == false){
+	    	User us = this.findByUsername(itrusername);
+			if((us.getCanBeTagged() == false) || (us.getAuthorities().get(0).getAuthority().equals("ROLE_ADMIN"))){
 				itr.remove();
 			}
 		}
